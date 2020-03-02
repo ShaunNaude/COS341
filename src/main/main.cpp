@@ -42,13 +42,20 @@ int main() {
     * */
 
     
+ //======================Main start=======================================================
+    //get input from user
+    string input;
+    cout<<"Enter textfile Name: ";
+    getline(cin,input);
     
+    //create lexer 
+    shared_ptr<lexer> lex = make_shared<lexer>();
+    //start the lexing (pass txt as parameter)
+    lex->start(input);
+
+//=======================================================================================
 
 
-
-
-
-
-
+return 0;
 
 }
