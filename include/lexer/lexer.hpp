@@ -2,6 +2,8 @@
 #include <memory>
 #include <list>
 #include "lexer/token.hpp"
+#include <fstream>
+#include <string>
 
 using namespace std;
 
