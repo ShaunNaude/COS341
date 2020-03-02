@@ -19,7 +19,6 @@ int main() {
     * 
     *   4) The lexer class is also supposed to write all errors to a textfile.
     * 
-    * 
     * ====================================================================================== 
     * */
 
