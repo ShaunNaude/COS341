@@ -12,6 +12,8 @@ public:
     ~token(){};
 
     string token_str;
+    int starting_Pos;
+    int ending_Pos;
 
 
 };
