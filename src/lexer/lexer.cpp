@@ -282,9 +282,75 @@ int lexer::isKeyword(string Input, int start){
 */
 
 
+/*
+======================================================================================================================================
+                                            IsString Function START               
+======================================================================================================================================
+*/
 int lexer::isString(string Input, int start){
+
+    //////////////////////////////////////////////////////
+        //THIS FUNCTION IS BEING DONE BY SHAUN
+    /////////////////////////////////////////////////////
+
+    //input is the current line
+    //start should be a  ' " ' 
+    //i need to identify a string that is 8 character long, not including quotes
+    //the string is defined by this REGEX = [a-z0-9space]{0-8}
+    //we only return -1 if it could not be tokenized
+    //if we hit a lex error write the error str to the txt file and continue from the end of the error str
+
+    /*
+    -> easiest way to check if the str has an end quote
+        -> copy from pos=1 until the end of the input *(therefor we are cutting out the open quote that got us here)
+        -> first check if there is a ' " ' i
+            -> if there is a quote somehere in the string, read up until that quote
+            -> be sure to check the length as u go along so u can record errors.
+            ->in this statement is where possible tokenization can happen
+            -> if we have an error eg too long OR invalid char, be sure to send the position where the str ended so we can ignore that piece
+                and tokenize the rest of the file.
+
+        -> lets say there is not an end quote in the line, now we already know the str is invalid... 
+        -> we need to read up until the point where the quote should have been and record that as our error.
+        -> be sure to send back the position that is after the faulty string so we can continue parsing our file.
+            */
+
+    /*
+    pos =  start+1
+    count = 0
+    newStr=""
+    bool noValidstr = false
+    while ( pos != ' " ' && count<8 )
+    do  
+        if(pos == [a-z0-9space])
+            then    
+                newStr[0] = pos
+
+            else
+                noValidstr = true;
+    end
+
+        if noValidstr == true
+            then   
+                write the incorrect str to the error txt file,
+
+
+    */
+
+
+
+
+
+
     return -1;
 }
+/*
+======================================================================================================================================
+                                            IsString Function END              
+======================================================================================================================================
+*/
+
+
 int lexer::isVar(string Input, int start){
     return -1;
 }
