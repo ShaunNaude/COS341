@@ -310,7 +310,17 @@ int lexer::isVar(string Input, int start){
     return -1;
 }
 int lexer::isInt(string Input, int start){
-    return -1;
+    string IntVals = "123456789";
+    int end = start+1;
+    if(((int)IntVals.find(Input.at(start)) >= 0)||(Input.at(start)=='-')){
+        IntVals += "0";
+        while((int)IntVals.find(Input.at(end)) >= 0){
+            end++;
+        }
+        AddNode("int", start, end);
+        return (end);
+    }else
+        return -1;
 } 
 void lexer::AddNode(string Input, int start, int endS){
 
