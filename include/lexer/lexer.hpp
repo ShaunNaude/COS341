@@ -26,4 +26,7 @@ private:
     int isInt(string, int);
     
     void AddNode(string, int, int);
+
+    //Helper functions
+    bool OperatorNext(char);
 };
