@@ -307,7 +307,18 @@ int lexer::isString(string Input, int start){
     return -1;
 }
 int lexer::isVar(string Input, int start){
-    return -1;
+    string VarStart = "abcdefghijklmnopqrstuvwxyz";
+    string VarChars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    int end = start;
+    if(((int)VarStart.find(Input.at(start)) >= 0)){
+        while((int)VarChars.find(Input.at(end)) >= 0){
+            end++;
+        }
+        AddNode("var", start, end-1);
+        return (end);
+    }else{
+        return -1;
+    }
 }
 int lexer::isInt(string Input, int start){
     string IntVals = "123456789";
@@ -317,7 +328,7 @@ int lexer::isInt(string Input, int start){
         while((int)IntVals.find(Input.at(end)) >= 0){
             end++;
         }
-        AddNode("int", start, end);
+        AddNode("int", start, end-1);
         return (end);
     }else
         return -1;
