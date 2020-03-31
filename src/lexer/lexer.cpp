@@ -101,7 +101,7 @@ void lexer::start(string Input){
 
 int lexer::isOperator(string Input, int start){
     string ValOperators = "<>(){}=,;";
-    int end = start+1;
+    int end = start;
     if(((int)ValOperators.find(Input.at(start)) >= 0)){
         if(Input.at(start)=='<'){
             AddNode("lthan", start, end);
@@ -123,7 +123,7 @@ int lexer::isOperator(string Input, int start){
             AddNode("semicolon", start, end);
         }
         
-        return (start+1);
+        return (end+1);
     }else
         return -1;
 }
