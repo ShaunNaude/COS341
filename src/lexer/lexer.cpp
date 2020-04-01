@@ -129,12 +129,6 @@ int lexer::isOperator(string Input, int start){
 }
 int lexer::isKeyword(string Input, int start){
     int end = start;
-    //check if end of line or a space then return and carry on.
-    if(start!=0){
-        if ((Input.at(start-1)!='#')||(Input.at(start-1)!=' ')){
-            return -1;
-        }
-    }
     if(Input.at(end) == 'i'){
         if(Input.at(end+1) == 'f'){
             end = end + 1;
