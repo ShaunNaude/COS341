@@ -154,7 +154,7 @@ int lexer::isKeyword(string Input, int start){
             AddNode("if", start, end);
             return end+1;
         }
-        if((Input.at(end+1) = 'n')&&(Input.at(end+2) = 'p')&&(Input.at(end+3) = 'u')&&(Input.at(end+4) = 't')){
+        if((Input.at(end+1)== 'n')&&(Input.at(end+2)== 'p')&&(Input.at(end+3)== 'u')&&(Input.at(end+4)== 't')){
             end = end + 4;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             //add to all
@@ -164,7 +164,7 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'b'){
-        if ((Input.at(end+1) = 'o')&&(Input.at(end+2) = 'o')&&(Input.at(end+3) = 'l')){
+        if ((Input.at(end+1)== 'o')&&(Input.at(end+2)== 'o')&&(Input.at(end+3)== 'l')){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("bool", start, end);
@@ -174,7 +174,7 @@ int lexer::isKeyword(string Input, int start){
         }
         
     }else if(Input.at(end) == 'w'){
-        if ((Input.at(end+1) = 'h')&&(Input.at(end+2) = 'i')&&(Input.at(end+3) = 'l')&&(Input.at(end+4) = 'e')){
+        if ((Input.at(end+1)== 'h')&&(Input.at(end+2)== 'i')&&(Input.at(end+3)== 'l')&&(Input.at(end+4)== 'e')){
             end = end + 4;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("while", start, end);
@@ -183,13 +183,13 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'e'){
-        if ((Input.at(end+1) = 'l')&&(Input.at(end+2) = 's')&&(Input.at(end+3) = 'e')){
+        if ((Input.at(end+1)== 'l')&&(Input.at(end+2)== 's')&&(Input.at(end+3)== 'e')){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("else", start, end);
             return end+1;
         }
-        if((Input.at(end+1) = 'q')){
+        if((Input.at(end+1)== 'q')){
             end = end + 1;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("eq", start, end);
@@ -198,7 +198,7 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 't'){
-        if ((Input.at(end+1) = 'h')&&(Input.at(end+2) = 'e')&&(Input.at(end+3) = 'n')){
+        if ((Input.at(end+1)== 'h')&&(Input.at(end+2)== 'e')&&(Input.at(end+3)== 'n')){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("then", start, end);
@@ -207,13 +207,13 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'a'){
-        if ((Input.at(end+1) = 'n')&&(Input.at(end+2) = 'd')){
+        if ((Input.at(end+1)== 'n')&&(Input.at(end+2)== 'd')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("and", start, end);
             return end+1;
         }
-        if ((Input.at(end+1) = 'd')&&(Input.at(end+2) = 'd')){
+        if ((Input.at(end+1)== 'd')&&(Input.at(end+2)== 'd')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("add", start, end);
@@ -222,13 +222,13 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'n'){
-        if ((Input.at(end+1) = 'u')&&(Input.at(end+2) = 'm')){
+        if ((Input.at(end+1)== 'u')&&(Input.at(end+2)== 'm')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("num", start, end);
             return end+1;
         }
-        if ((Input.at(end+1) = 'o')&&(Input.at(end+2) = 't')){
+        if ((Input.at(end+1)== 'o')&&(Input.at(end+2)== 't')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("not", start, end);
@@ -237,13 +237,13 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'o'){
-        if ((Input.at(end+1) = 'r')){
+        if ((Input.at(end+1)== 'r')){
             end = end + 1;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("or", start, end);
             return end+1;
         }
-        if ((Input.at(end+1) = 'u')&&(Input.at(end+2) = 't')&&(Input.at(end+3) = 'p')&&(Input.at(end+4) = 'u')&&(Input.at(end+5) = 't')){
+        if ((Input.at(end+1)== 'u')&&(Input.at(end+2)== 't')&&(Input.at(end+3)== 'p')&&(Input.at(end+4)== 'u')&&(Input.at(end+5)== 't')){
             end = end + 5;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("output", start, end);
@@ -260,13 +260,13 @@ int lexer::isKeyword(string Input, int start){
         AddNode("F", start, end);
         return end+1;
     }else if(Input.at(end) == 's'){
-        if ((Input.at(end+1) = 'u')&&(Input.at(end+2) = 'b')){
+        if ((Input.at(end+1)== 'u')&&(Input.at(end+2)== 'b')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("sub", start, end);
             return end+1;
         }
-        if ((Input.at(end+1) = 't')&&(Input.at(end+2) = 'r')&&(Input.at(end+3) = 'i')&&(Input.at(end+4) = 'n')&&(Input.at(end+5) = 'g')){
+        if ((Input.at(end+1)== 't')&&(Input.at(end+2)== 'r')&&(Input.at(end+3)== 'i')&&(Input.at(end+4)== 'n')&&(Input.at(end+5)== 'g')){
             end = end + 5;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("string", start, end);
@@ -275,7 +275,7 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'f'){
-        if ((Input.at(end+1) = 'o')&&(Input.at(end+2) = 'r')){
+        if ((Input.at(end+1)== 'o')&&(Input.at(end+2)== 'r')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("for", start, end);
@@ -284,7 +284,7 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'm'){
-        if ((Input.at(end+1) = 'u')&&(Input.at(end+2) = 'l')&&(Input.at(end+3) = 't')){
+        if ((Input.at(end+1)== 'u')&&(Input.at(end+2)== 'l')&&(Input.at(end+3)== 't')){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("mult", start, end);
@@ -293,7 +293,7 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'h'){
-        if ((Input.at(end+1) = 'a')&&(Input.at(end+2) = 'l')&&(Input.at(end+3) = 't')){
+        if ((Input.at(end+1)== 'a')&&(Input.at(end+2)== 'l')&&(Input.at(end+3)== 't')){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("halt", start, end);
@@ -302,7 +302,7 @@ int lexer::isKeyword(string Input, int start){
             return -1;
         }
     }else if(Input.at(end) == 'p'){
-        if ((Input.at(end+1) = 'r')&&(Input.at(end+2) = 'o')&&(Input.at(end+3) = 'c')){
+        if ((Input.at(end+1)== 'r')&&(Input.at(end+2)== 'o')&&(Input.at(end+3)== 'c')){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("proc", start, end);
