@@ -316,33 +316,59 @@ int lexer::isString(string Input, int start){
             */
 
     /*
-    pos =  start+1
-    count = 0
-    newStr=""
-    bool noValidstr = false
-    while ( pos != ' " ' && count<8 )
-    do  
-        if(pos == [a-z0-9space])
-            then    
-                newStr[0] = pos
-
-            else
-                noValidstr = true;
-    end
-
-        if noValidstr == true
-            then   
-                write the incorrect str to the error txt file,
-
+    
 
     */
+        list<int> errors;
+        
+        string line="";
+        //this copies the entire line except for the starting open quote
+        line.copy(Input,Input.length(),start+1);
+
+            //if this is true we have a closing quote
+        if( (int)line.find('"') >= 0)
+        {
+            //read while pos!=' " '
+            //{
+                //if the length is greater than 8 
+                    //send error message to error logger
+                        //BE SURE TO CHECK IF A INVAILID CHARACTER WAS HIT 
+
+                //if invalid character make bool true, record position of error in vector
+
+            //}
+
+        }
+        else{
+            //if we are here it means there is no closing quote
+
+                //make a function to log errors
+                    //we will possibly have 2 errors here definatly str too long and we must check if there are invalid characters in the designated 8 chars
+                    //the error logger function needs to be sent the error message, all the error logger must do is write to txtfile
+
+
+                for(int i = 0 ; i<8 ;i++)
+                {
+                    
+                }
+
+
+
+            //return the position where the lexer will keep parsing should be start+10
+        }
 
 
 
 
 
 
-    return -1;
+
+
+
+
+
+
+    
 }
 /*
 ======================================================================================================================================
