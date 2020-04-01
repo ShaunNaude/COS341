@@ -42,7 +42,7 @@ void lexer::start(string Input){
         //while not end of line                                  
         while(result.at(pos) != '#'){
             Tokenized = false;
-
+            
             //operator                  //this checks if pos is a operator              
             if((Tokenized == false)&&( (int)operators.find(result[pos]) >= 0 )){
                 checkPos = isOperator(result, pos);
@@ -85,7 +85,8 @@ void lexer::start(string Input){
                 }
             }
             //space
-            if( (Tokenized == false)&&( result.at(pos) == ' ' )){                               
+            if( (Tokenized == false)&&( result.at(pos) == ' ' )){  
+                pos++;                             
                 continue;
             }
 
@@ -96,6 +97,8 @@ void lexer::start(string Input){
         }
         //whatever our error resetting does.
         pos++;
+        //this keeps track of what line we are currently reading *used for errorLog*
+        currentLine++;
     }
 }
 
@@ -136,10 +139,12 @@ int lexer::isOperator(string Input, int start){
 int lexer::isKeyword(string Input, int start){
     int end = start;
     //check if end of line or a space then return and carry on.
+    cout<<Input;
     if(start!=0){
-        if ((Input.at(start-1)!='#')||(Input.at(start-1)!=' ')){
-            return -1;
+        if ((Input[start-1]=='#')||(Input[start-1]==' ')){
+        
         }
+        else return -1;
     }
     if(Input.at(end) == 'i'){
         if(Input.at(end+1) == 'f'){
@@ -355,10 +360,12 @@ int lexer::isString(string Input, int start){
 
     */
         list<int> errors;
-        
-        string line="";
+        bool invalidChar;
         //this copies the entire line except for the starting open quote
-        line.copy(Input,Input.length(),start+1);
+       
+        string line= Input.substr(start+1,Input.length());
+        
+        
 
             //if this is true we have a closing quote
         if( (int)line.find('"') >= 0)
@@ -381,13 +388,13 @@ int lexer::isString(string Input, int start){
                     //we will possibly have 2 errors here definatly str too long and we must check if there are invalid characters in the designated 8 chars
                     //the error logger function needs to be sent the error message, all the error logger must do is write to txtfile
 
+            string errorLine = line.substr(0,9);
 
-                for(int i = 0 ; i<8 ;i++)
-                {
-                    
-                }
+            errorLine = '"' + errorLine + "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: "+"strings have at most 8 characters";
 
-
+            logError(errorLine);
+             
+             return start+10;
 
             //return the position where the lexer will keep parsing should be start+10
         }
@@ -469,4 +476,20 @@ bool lexer::OperatorNext(char MyChar){
         return false;
     }
     return true;
+}
+
+bool lexer::isValid(char MyChar){
+//============================================================
+    //this function will true if mychar = REGEX = [a-z0-9space]{0-8}
+//============================================================
+    
+
+}
+
+void lexer::logError(string error){
+//=========================================================================
+    //this function will write the error to a textfile
+        //note this function must recieve a error message as input.
+//=========================================================================
+
 }

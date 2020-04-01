@@ -5,6 +5,7 @@
         "name": "(gdb) Launch",
         "type": "cppdbg",
         "request": "launch",
+        "preLaunchTask": "Build C++ project",
         "program": "${workspaceFolder}/bin/main",
         "args": [],
         "stopAtEntry": false,
