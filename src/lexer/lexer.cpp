@@ -85,18 +85,16 @@ void lexer::start(string Input){
                 }
             }
             //space
-<<<<<<< HEAD
-            if( (Tokenized == false)&&( result.at(pos) == ' ' )){  
-                pos++;                             
-=======
             if( (Tokenized == false)&&( result.at(pos) == ' ' )){         
                 pos++;                      
->>>>>>> master
                 continue;
             }
 
             if( (Tokenized == false) ){                               
-                //add error message here
+                char error=result[pos];
+                string s = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(pos)+ "]: '" + error + "' is Not a valid character";
+                logError(s);
+                pos++;
             }
 
         }
@@ -105,6 +103,8 @@ void lexer::start(string Input){
         //this keeps track of what line we are currently reading *used for errorLog*
         currentLine++;
     }
+
+    cout<<"here"<<endl;
 }
 
 int lexer::isOperator(string Input, int start){
@@ -143,17 +143,6 @@ int lexer::isOperator(string Input, int start){
 */
 int lexer::isKeyword(string Input, int start){
     int end = start;
-<<<<<<< HEAD
-    //check if end of line or a space then return and carry on.
-    cout<<Input;
-    if(start!=0){
-        if ((Input[start-1]=='#')||(Input[start-1]==' ')){
-        
-        }
-        else return -1;
-    }
-=======
->>>>>>> master
     if(Input.at(end) == 'i'){
         if(Input.at(end+1) == 'f'){
             end = end + 1;
@@ -368,7 +357,9 @@ int lexer::isString(string Input, int start){
 
     */
         list<int> errors;
-        bool invalidChar;
+        bool invalidChar = false;
+        bool lengthError = false;
+        string errorLine="";
         //this copies the entire line except for the starting open quote
        
         string line= Input.substr(start+1,Input.length());
@@ -388,23 +379,97 @@ int lexer::isString(string Input, int start){
 
             //}
 
+            int pos=0;
+
+            while(line[pos] != '"')
+            {
+                if( isValid(line[pos]) == false )
+                {
+                    invalidChar = true;
+                    exit;
+                }
+
+                if(pos>8)
+                {
+                    lengthError = true;
+                    exit;
+                }
+                pos++;
+            }
+
+            if(lengthError==false && invalidChar==false)
+            {
+                //tokenize //type ,start,end,actual
+                AddNode("String",start,start+pos+1,line.substr(0,pos));
+                return start+pos+2;
+                
+            }
+
+            else{
+                    if (lengthError == true)
+                    {
+                        errorLine = '"'+line.substr(0,9);
+                       errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: '"+ errorLine + "' strings have at most 8 characters"; 
+                       logError(errorLine);
+                       
+                    }
+
+                    if(invalidChar == true)
+                    {
+                        
+                        if(lengthError==false)
+                        {
+                            errorLine = line.substr(0,pos);
+                            errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+pos+1)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+                        }
+                        else{
+                            errorLine = line.substr(0,9);
+                            errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+                        }
+                        logError(errorLine);
+
+                    }
+
+                    
+                        return start+pos+2;
+                    
+                    
+            }
+
         }
+        
         else{
             //if we are here it means there is no closing quote
 
                 //make a function to log errors
                     //we will possibly have 2 errors here definatly str too long and we must check if there are invalid characters in the designated 8 chars
                     //the error logger function needs to be sent the error message, all the error logger must do is write to txtfile
+            
+            errorLine = '"'+line.substr(0,9);
 
-            string errorLine = line.substr(0,9);
-
-            errorLine = '"' + errorLine + "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: "+"strings have at most 8 characters";
+            errorLine =  "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: '"+ errorLine +"' strings have at most 8 characters";
 
             logError(errorLine);
+            errorLine="";
+
+            for(int i = 0 ; i<line.length() ; i++)
+                {
+                    if( isValid(line[i]) == false )
+                    {
+                        invalidChar = true;
+                        exit;
+                    }
+                }
+
+                    if(invalidChar == true)
+                    {
+                        errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+                        logError(errorLine);
+                    }
+                 
+
              
              return start+10;
-
-            //return the position where the lexer will keep parsing should be start+10
         }
 
 
@@ -458,7 +523,7 @@ int lexer::isInt(string Input, int start){
     }else
         return -1;
 } 
-void lexer::AddNode(string Input, int start, int endS, string InputStr){
+void lexer::AddNode(string type, int start, int endS, string InputStr){
 
 //============================================================
         //this function will add nodes to  Linked-list
@@ -468,7 +533,7 @@ void lexer::AddNode(string Input, int start, int endS, string InputStr){
         shared_ptr<token> T = make_shared<token> () ;
 
         //set variables
-        T->token_type = Input;
+        T->token_type = type;
         T->token_str = InputStr;
         T->starting_Pos = start;
         T->ending_Pos = endS; 
@@ -495,14 +560,21 @@ bool lexer::isValid(char MyChar){
 //============================================================
     //this function will true if mychar = REGEX = [a-z0-9space]{0-8}
 //============================================================
+
+    string valid = "abcdefghijklmnopqrstuvwxyz0123456789 ";
+
+    if(( (int)valid.find(MyChar) >= 0 ))
+        return true;
+    else return false;
     
 
 }
 
 void lexer::logError(string error){
 //=========================================================================
-    //this function will write the error to a textfile
-        //note this function must recieve a error message as input.
+                //this will cout the error
 //=========================================================================
+    cout<<error<<endl;
+    
 
 }

@@ -1,3 +1,1 @@
-if then else> > 151515
-if  3( eq"  7"##{  add sub
-123456789
+0;m = n;if (( m < zero )) then { m = mult(m, -1) };while ((m < zero)) { m = sub(m, 2) };if (eq(m, zero)) then { r = "even" }else { r = "odd" };}
