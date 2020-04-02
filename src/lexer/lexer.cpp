@@ -524,11 +524,15 @@ int lexer::isInt(string Input, int start){
         return (end);
     }else if(Input.at(start)=='0'){
         IntVals += "0";
-        while(((int)IntVals.find(Input.at(start)) >= 0)){
+        while(((int)IntVals.find(Input.at(end)) >= 0)){
             MyInt += Input.at(end);
             end++;
         }
-        logError("Lexical Error [line: "+to_string(currentLine)+", col: "+to_string(currentCol)+"]: "+to_string(MyInt)+" can't start with 0");
+        if(MyInt == "0"){
+            AddNode("int", start, end-1, MyInt);
+            return (end);
+        }
+        logError("Lexical Error [line: "+to_string(currentLine)+", col: "+to_string(currentCol)+"]: "+MyInt+" can't start with 0");
         currentCol=currentCol+start-end;
         return end;
     }else
