@@ -102,6 +102,8 @@ void lexer::start(string Input){
         pos++;
         //this keeps track of what line we are currently reading *used for errorLog*
         currentLine++;
+        //this keeps track of what column we are currently reading *used for errorLog*
+        currentCol=1;
     }
 
     cout<<"here"<<endl;
@@ -130,7 +132,7 @@ int lexer::isOperator(string Input, int start){
         }else if(Input.at(start)==';'){
             AddNode("semicolon", start, end, ";");
         }
-        
+        currentCol++;
         return (end+1);
     }else
         return -1;
@@ -511,7 +513,7 @@ int lexer::isVar(string Input, int start){
 int lexer::isInt(string Input, int start){
     string IntVals = "123456789";
     string MyInt = "";
-    int end = start+1;
+    int end = start;
     if(((int)IntVals.find(Input.at(start)) >= 0)||(Input.at(start)=='-')){
         IntVals += "0";
         while((int)IntVals.find(Input.at(end)) >= 0){
@@ -520,6 +522,15 @@ int lexer::isInt(string Input, int start){
         }
         AddNode("int", start, end-1, MyInt);
         return (end);
+    }else if(Input.at(start)=='0'){
+        IntVals += "0";
+        while(((int)IntVals.find(Input.at(start)) >= 0)){
+            MyInt += Input.at(end);
+            end++;
+        }
+        logError("Lexical Error [line: "+to_string(currentLine)+", col: "+to_string(currentCol)+"]: "+to_string(MyInt)+" can't start with 0");
+        currentCol=currentCol+start-end;
+        return end;
     }else
         return -1;
 } 
