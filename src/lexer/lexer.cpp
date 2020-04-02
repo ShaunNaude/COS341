@@ -38,7 +38,8 @@ void lexer::start(string Input){
 
 
     //while not end of string
-    while(result.at(pos) != '\000'){  
+    while(result.at(pos) != '\0'){ 
+        cout<<"for fun"<<endl; 
         //while not end of line                                  
         while(result.at(pos) != '#'){
             Tokenized = false;
