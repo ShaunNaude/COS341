@@ -38,7 +38,7 @@ void lexer::start(string Input){
 
 
     //while not end of string
-    while(result.at(pos) != '\0'){  
+    while(result.at(pos) != '\000'){  
         //while not end of line                                  
         while(result.at(pos) != '#'){
             Tokenized = false;
@@ -77,7 +77,7 @@ void lexer::start(string Input){
                 }
             }
             //int                       //compares ascii values 0-9
-            if((Tokenized == false)&&( result[pos] >= '0' && result[pos] <= '9')){                               
+            if((((Tokenized == false)&&( result[pos] >= '0' && result[pos] <= '9'))||(result[pos] == '-'))){                               
                 checkPos = isInt(result, pos);
                 if (checkPos != -1){//if no error found
                     pos = checkPos;
@@ -515,10 +515,17 @@ int lexer::isInt(string Input, int start){
     string MyInt = "";
     int end = start;
     if(((int)IntVals.find(Input.at(start)) >= 0)||(Input.at(start)=='-')){
+        if (Input.at(start)=='-'){
+            MyInt+="-";
+            end++;
+        }
         IntVals += "0";
         while((int)IntVals.find(Input.at(end)) >= 0){
             MyInt += Input.at(end);
             end++;
+        }
+        if(MyInt == "-"){
+            return -1;
         }
         AddNode("int", start, end-1, MyInt);
         return (end);
