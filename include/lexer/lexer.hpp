@@ -25,7 +25,7 @@ private:
     int isVar(string, int);
     int isInt(string, int);
     
-    void AddNode(string, int, int);
+    void AddNode(string, int, int, string);
 
     //Helper functions
     bool OperatorNext(char);
