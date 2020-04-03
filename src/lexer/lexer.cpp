@@ -546,7 +546,7 @@ int lexer::isInt(string Input, int start){
             MyInt += Input.at(end);
             end++;
         }
-        if((MyInt == "-")||(MyInt[start+1]=='0')){
+        if((MyInt == "-")||(MyInt[1]=='0')){
             logError("Lexical Error [line: "+to_string(currentLine)+", col: "+to_string(currentCol)+"]: "+MyInt+" is not a valid integer");
             return -1;
         }
