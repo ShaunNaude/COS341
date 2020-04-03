@@ -476,20 +476,24 @@ int lexer::isString(string Input, int start){
                     //we will possibly have 2 errors here definatly str too long and we must check if there are invalid characters in the designated 8 chars
                     //the error logger function needs to be sent the error message, all the error logger must do is write to txtfile
             
-            errorLine = '"'+line.substr(0,9);
+            errorLine = line.substr(0,9);
 
-            errorLine =  "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '"+ errorLine +"' strings have at most 8 characters";
+            errorLine =  "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"'+ errorLine +"' strings have at most 8 characters";
 
             logError(errorLine);
-            errorLine="";
 
-            for(int i = 0 ; i<line.length() ; i++)
+            errorLine = line.substr(0,9);
+            
+            
+
+            for(int i = 0 ; i<errorLine.length() ; i++)
                 {
-                    if( isValid(line[i]) == false )
+                    if( isValid(errorLine[i]) == false )
                     {
                         invalidChar = true;
                         exit;
                     }
+                    
                 }
 
                     if(invalidChar == true)
