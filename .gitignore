@@ -1,3 +1,5 @@
-#Dont Track
+#FOLDERS
 bin/
+
+#FILES
 *.txt
