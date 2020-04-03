@@ -38,7 +38,7 @@ void lexer::start(string Input){
 
 
     //while not end of string
-    while(pos<result.length()/*result.at(pos) != '\0'*/){ 
+    while(pos<result.length()){ 
         //while not end of line                                  
         while(result.at(pos) != '#'){
             Tokenized = false;
@@ -85,14 +85,15 @@ void lexer::start(string Input){
                 }
             }
             //space
-            if( (Tokenized == false)&&( result.at(pos) == ' ' )){         
+            if( (Tokenized == false)&&( result.at(pos) == ' ' )){ 
+                currentCol++;        
                 pos++;                      
                 continue;
             }
 
             if( (Tokenized == false) ){                               
                 char error=result[pos];
-                string s = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(pos)+ "]: '" + error + "' is Not a valid character";
+                string s = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol)+ "]: '" + error + "' is Not a valid character";
                 logError(s);
                 pos++;
             }
@@ -106,7 +107,10 @@ void lexer::start(string Input){
         currentCol=1;
     }
 
-    cout<<"here"<<endl;
+    
+
+    //here we need to write tokens to txtfile
+    ///======================================
 }
 
 int lexer::isOperator(string Input, int start){
@@ -432,7 +436,7 @@ int lexer::isString(string Input, int start){
                     if (lengthError == true)
                     {
                         errorLine = '"'+line.substr(0,9);
-                       errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: '"+ errorLine + "' strings have at most 8 characters"; 
+                       errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '"+ errorLine + "' strings have at most 8 characters"; 
                        logError(errorLine);
                        
                     }
@@ -443,17 +447,17 @@ int lexer::isString(string Input, int start){
                         if(lengthError==false)
                         {
                             errorLine = line.substr(0,pos);
-                            errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+pos+1)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+                            errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+pos+1)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
                         }
                         else{
                             errorLine = line.substr(0,9);
-                            errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+                            errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
                         }
                         logError(errorLine);
 
                     }
 
-                    
+                        currentCol = currentCol+pos+2;
                         return start+pos+2;
                     
                     
@@ -470,7 +474,7 @@ int lexer::isString(string Input, int start){
             
             errorLine = '"'+line.substr(0,9);
 
-            errorLine =  "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: '"+ errorLine +"' strings have at most 8 characters";
+            errorLine =  "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '"+ errorLine +"' strings have at most 8 characters";
 
             logError(errorLine);
             errorLine="";
@@ -486,12 +490,12 @@ int lexer::isString(string Input, int start){
 
                     if(invalidChar == true)
                     {
-                        errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(start) + "-" + to_string(start+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+                        errorLine = "LexicalError[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
                         logError(errorLine);
                     }
                  
 
-             
+             currentCol=currentCol+10;
              return start+10;
         }
 
