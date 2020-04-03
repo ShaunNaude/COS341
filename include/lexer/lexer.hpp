@@ -32,6 +32,7 @@ private:
     //Helper functions
     bool OperatorNext(char);
     bool isValid(char);
+    void writeTokens();
 
     //Global varibales
     int currentLine = 1;
