@@ -151,6 +151,7 @@ int lexer::isKeyword(string Input, int start){
             if(!OperatorNext(Input.at(end+1))){return -1;};
             //add to all
             AddNode("if", start, end, "if");
+            currentCol+=2;
             return end+1;
         }
         if((Input.at(end+1)== 'n')&&(Input.at(end+2)== 'p')&&(Input.at(end+3)== 'u')&&(Input.at(end+4)== 't')){
@@ -158,6 +159,7 @@ int lexer::isKeyword(string Input, int start){
             if(!OperatorNext(Input.at(end+1))){return -1;};
             //add to all
             AddNode("input", start, end, "input");
+            currentCol+=5;
             return end+1;
         }else{
             return -1;
@@ -167,6 +169,7 @@ int lexer::isKeyword(string Input, int start){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("bool", start, end, "bool");
+            currentCol+=4;
             return end+1;
         }else{
             return -1;
@@ -177,6 +180,7 @@ int lexer::isKeyword(string Input, int start){
             end = end + 4;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("while", start, end, "while");
+            currentCol+=5;
             return end+1;
         }else{
             return -1;
@@ -186,12 +190,14 @@ int lexer::isKeyword(string Input, int start){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("else", start, end, "else");
+            currentCol+=4;
             return end+1;
         }
         if((Input.at(end+1)== 'q')){
             end = end + 1;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("eq", start, end, "eq");
+            currentCol+=2;
             return end+1;
         }else{
             return -1;
@@ -201,6 +207,7 @@ int lexer::isKeyword(string Input, int start){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("then", start, end, "then");
+            currentCol+=4;
             return end+1;
         }else{
             return -1;
@@ -210,12 +217,14 @@ int lexer::isKeyword(string Input, int start){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("and", start, end, "and");
+            currentCol+=3;
             return end+1;
         }
         if ((Input.at(end+1)== 'd')&&(Input.at(end+2)== 'd')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("add", start, end, "add");
+            currentCol+=3;
             return end+1;
         }else{
             return -1;
@@ -225,12 +234,14 @@ int lexer::isKeyword(string Input, int start){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("num", start, end, "num");
+            currentCol+=3;
             return end+1;
         }
         if ((Input.at(end+1)== 'o')&&(Input.at(end+2)== 't')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("not", start, end, "not");
+            currentCol+=3;
             return end+1;
         }else{
             return -1;
@@ -240,12 +251,14 @@ int lexer::isKeyword(string Input, int start){
             end = end + 1;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("or", start, end, "or");
+            currentCol+=2;
             return end+1;
         }
         if ((Input.at(end+1)== 'u')&&(Input.at(end+2)== 't')&&(Input.at(end+3)== 'p')&&(Input.at(end+4)== 'u')&&(Input.at(end+5)== 't')){
             end = end + 5;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("output", start, end, "output");
+            currentCol+=6;
             return end+1;
         }else{
             return -1;
@@ -253,22 +266,26 @@ int lexer::isKeyword(string Input, int start){
     }else if(Input.at(end) == 'T'){
         if(!OperatorNext(Input.at(end+2))){return -1;};
         AddNode("T", start, end, "T");
+        currentCol+=1;
         return end+1;
     }else if(Input.at(end) == 'F'){
         if(!OperatorNext(Input.at(end+2))){return -1;};
         AddNode("F", start, end, "F");
+        currentCol+=1;
         return end+1;
     }else if(Input.at(end) == 's'){
         if ((Input.at(end+1)== 'u')&&(Input.at(end+2)== 'b')){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("sub", start, end, "sub");
+            currentCol+=3;
             return end+1;
         }
         if ((Input.at(end+1)== 't')&&(Input.at(end+2)== 'r')&&(Input.at(end+3)== 'i')&&(Input.at(end+4)== 'n')&&(Input.at(end+5)== 'g')){
             end = end + 5;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("string", start, end, "string");
+            currentCol+=6;
             return end+1;
         }else{
             return -1;
@@ -278,6 +295,7 @@ int lexer::isKeyword(string Input, int start){
             end = end + 2;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("for", start, end, "for");
+            currentCol+=3;
             return end+1;
         }else{
             return -1;
@@ -287,6 +305,7 @@ int lexer::isKeyword(string Input, int start){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("mult", start, end, "mult");
+            currentCol+=4;
             return end+1;
         }else{
             return -1;
@@ -296,6 +315,7 @@ int lexer::isKeyword(string Input, int start){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("halt", start, end, "halt");
+            currentCol+=4;
             return end+1;
         }else{
             return -1;
@@ -305,6 +325,7 @@ int lexer::isKeyword(string Input, int start){
             end = end + 3;
             if(!OperatorNext(Input.at(end+1))){return -1;};
             AddNode("proc", start, end, "proc");
+            currentCol+=4;
             return end+1;
         }else{
             return -1;
@@ -505,6 +526,7 @@ int lexer::isVar(string Input, int start){
             end++;
         }
         AddNode("var", start, end-1, Word);
+        currentCol+=(end-start);
         return (end);
     }else{
         return -1;
@@ -524,10 +546,12 @@ int lexer::isInt(string Input, int start){
             MyInt += Input.at(end);
             end++;
         }
-        if(MyInt == "-"){
+        if((MyInt == "-")||(MyInt[start+1]=='0')){
+            logError("Lexical Error [line: "+to_string(currentLine)+", col: "+to_string(currentCol)+"]: "+MyInt+" is not a valid integer");
             return -1;
         }
         AddNode("int", start, end-1, MyInt);
+        currentCol+=(end-start);
         return (end);
     }else if(Input.at(start)=='0'){
         IntVals += "0";
@@ -537,6 +561,7 @@ int lexer::isInt(string Input, int start){
         }
         if(MyInt == "0"){
             AddNode("int", start, end-1, MyInt);
+            currentCol+=(end-start);
             return (end);
         }
         logError("Lexical Error [line: "+to_string(currentLine)+", col: "+to_string(currentCol)+"]: "+MyInt+" can't start with 0");
