@@ -560,7 +560,7 @@ void lexer::logError(string error){//this will cout the error
 void lexer::writeTokens(){
     ofstream myfile;
     myfile.open ("Tokens.txt");
-    myfile << "Writing thddis to a file."<<endl;
+    myfile << "Writing this to a file."<<endl;
     auto it = tokenList.begin();
     int count = 1;
     string write="";
