@@ -90,7 +90,7 @@ void lexer::start(string Input){
 
             if( (Tokenized == false) ){                               
                 char error=result[pos];
-                string s = "Lexical Error[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol)+ "]: '" + error + "' is Not a valid character";
+                string s = "Lexical Error [line:" + to_string(currentLine)+ ",col:" + to_string(currentCol)+ "]: '" + error + "' is Not a valid character";
                 logError(s);
                 pos++;
             }
@@ -405,7 +405,7 @@ int lexer::isString(string Input, int start){//this function will check for vali
             if (lengthError == true)
             {
                 errorLine = '"'+line.substr(0,9);
-                errorLine = "Lexical Error[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '"+ errorLine + "' strings have at most 8 characters"; 
+                errorLine = "Lexical Error [line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '"+ errorLine + "' strings have at most 8 characters"; 
                 logError(errorLine);
             }
 
@@ -414,10 +414,10 @@ int lexer::isString(string Input, int start){//this function will check for vali
                 if(lengthError==false)
                 {
                     errorLine = line.substr(0,pos);
-                    errorLine = "Lexical Error[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+pos+1)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+                    errorLine = "Lexical Error [line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+pos+1)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
                 }else{
                     errorLine = line.substr(0,9);
-                    errorLine = "Lexical Error[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+                    errorLine = "Lexical Error [line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
                 }
                 logError(errorLine);
 
@@ -434,7 +434,7 @@ int lexer::isString(string Input, int start){//this function will check for vali
                 //the error logger function needs to be sent the error message, all the error logger must do is write to txtfile
             
         errorLine = line.substr(0,9);
-        errorLine =  "Lexical Error[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"'+ errorLine +"' strings have at most 8 characters";
+        errorLine =  "Lexical Error [line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"'+ errorLine +"' strings have at most 8 characters";
 
         logError(errorLine);
 
@@ -451,7 +451,7 @@ int lexer::isString(string Input, int start){//this function will check for vali
 
         if(invalidChar == true)
         {
-            errorLine = "Lexical Error[line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
+            errorLine = "Lexical Error [line:" + to_string(currentLine)+ ",col:" + to_string(currentCol) + "-" + to_string(currentCol+9)  + "]: '" + '"' + errorLine + '"' + "' string contains invalid characters";
             logError(errorLine);
         }
 
