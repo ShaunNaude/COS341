@@ -29,7 +29,13 @@ void parser::start()
 }
 
 
+void parser::first(){
 
+}
+
+void parser::follow(){
+    
+}
 
 
 
