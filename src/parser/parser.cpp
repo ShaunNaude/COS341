@@ -16,7 +16,9 @@ parser::~parser() {
 void parser::start()
 {
     //here we need to input the grammar into the parser.
+    addGrammar();
 
+    
     
     
 
