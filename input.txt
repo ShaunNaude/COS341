@@ -1,2 +1,15 @@
-if  3( eq"  7"##{  add sub
-123456789
+input(x);#
+n = x;#
+#
+#
+num = -cunt;#
+num1 = -08998;#
+num2 = 0998;#
+r = "ForgotQuotes#
+checknumber;#
+if (eq(r, s)) then {#
+output(s)#
+} else {#
+output( r )#
+};#
+halt;#

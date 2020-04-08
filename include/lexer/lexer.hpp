@@ -24,9 +24,18 @@ private:
     int isString(string, int);
     int isVar(string, int);
     int isInt(string, int);
-    
+    void logError(string);
     void AddNode(string, int, int);
+    
+    void AddNode(string, int, int, string);
 
     //Helper functions
     bool OperatorNext(char);
+    bool isValid(char);
+    void writeTokens();
+
+    //Global varibales
+    int currentLine = 1;
+    int currentCol = 1;
+    
 };

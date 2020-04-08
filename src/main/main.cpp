@@ -1,5 +1,7 @@
 #include <iostream>
 #include <lexer/lexer.hpp>
+#include <parser/parser.hpp>
+
 
 using namespace std;
 
@@ -52,6 +54,17 @@ int main() {
     shared_ptr<lexer> lex = make_shared<lexer>();
     //start the lexing (pass txt as parameter)
     lex->start(input);
+
+    //get tokens from lexer
+    list<shared_ptr <token> > tokenList = lex->tokenList;
+
+    //create parser
+    shared_ptr<parser> par = make_shared<parser>(tokenList);
+    par->start();
+
+
+
+
 
 //=======================================================================================
 

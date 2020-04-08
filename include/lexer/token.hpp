@@ -15,6 +15,6 @@ public:
     string token_type;
     int starting_Pos;
     int ending_Pos;
-
-
+    int MyLine;
+    int MyCol;
 };
