@@ -18,9 +18,38 @@ void parser::start()
     //here we need to input the grammar into the parser.
     addGrammar();
 
-    
-    
-    
+    //========================Calculating the first===========================================
+    int NodeCount = 0;
+    int k = 0, kay = 0, ptr = -1, check = 0;
+    char done[47], c;
+    shared_ptr<nonTerminal> ANode = listNT[k];
+    for(int i=0; i<47; i++, NodeCount++){//counter for all nodes in total
+        if(NodeCount==ANode->Productions.size()){
+            NodeCount=0;
+            k++;
+            ANode=listNT[k];
+        }
+        c = ANode->type[0];
+        for(kay=0; kay<=ptr; kay++){
+            if(c==done[kay]){check=1;}
+        }
+        if(check==1){
+            continue;
+        }
+        first(ANode,c,0,0);
+        ptr++;
+        done[ptr] = c;
+    }
+    //========================Calculating the first===========================================
+    shared_ptr<nonTerminal> MyDisp;
+    for(int i=0; i<listNT.size(); i++){
+        MyDisp = listNT[i];
+        cout<<MyDisp->type<<":";
+        for(int j=0; j<MyDisp->firstSet.size(); j++){
+            cout<<MyDisp->firstSet[j]<<",";
+        }
+        cout<<endl;
+    }
 
 
 
@@ -28,30 +57,37 @@ void parser::start()
 
 }
 
+void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int RulePos){
+    int cProd = 0;//will be the number of productions in the struct currently
+    int count2 = 0;//counter for ListNT
+    shared_ptr<nonTerminal> ANode = listNT[count2];//ANode is used to increment through all the non-terminals
 
-void parser::first(/**/){
-//    int count = /*number of rules*/;//number of rules considers or as another rule(we have no or's)
-//    if(/*Terminal node*/){//The case where you encounter a terminal
-        //push onto first the terminal node
-//    }
-//
-//    for(int j=0; j<count; j++){
-//        if(/**/){//if the current rule for the grammar(eg: E->MC;   if(E))
-//            if(/*encounter a epsilon*/){
-//                if(/*encounter the end of rule*/){
-                    //push # onto first
-//                }else if(/*not the end of the rule && not the beginning of the rule*/){//if the current rule for the grammar(eg: E->MC;   if(!'\0'&&!E))
-//                    first(/**/);//call first of new non-terminal node
-//                }else{  
-//                    //push onto first epsilon
-//                }
-//            }else if(/*Terminal node*/){
-                //push onto first the terminal node
-//            }else{
-//                first(/**/);//calc first for new non-terminal encountered
-//            }
-//        }
-//    }
+    if(!isupper(c)){//The case where you encounter a terminal
+        MyNode->firstSet.push_back(c);//push onto first the terminal node
+    }
+
+    for(int j=0; j<47; j++, cProd++){
+        if(cProd==ANode->Productions.size()){
+            cProd=0;
+            count2++;
+            ANode=listNT[count2];
+        }
+        if(ANode->type[0]==c){//if the current rule for the grammar(eg: E->MC;   if(E))
+            if(ANode->Productions[cProd].at(0)=='#'){
+                if(ANode->Productions[ProdPos].at(RulePos)=='\0'){
+                    MyNode->firstSet.push_back('#');
+                }else if((ProdPos!=0||RulePos!=0)){//if the current rule for the grammar(eg: E->MC;   if(!'\0'&&!E))
+                    first(ANode, MyNode->Productions[ProdPos].at(RulePos), ProdPos, RulePos+1);//call first of new non-terminal node
+                }else{  
+                    MyNode->firstSet.push_back('#');
+                }
+            }else if(!isupper(ANode->Productions[cProd].at(0))){
+                MyNode->firstSet.push_back(ANode->Productions[cProd].at(0));
+            }else{
+                first(ANode, ANode->Productions[cProd].at(0), cProd, 1);//calc first for new non-terminal encountered
+            }
+        }
+    }
 }
 
 void parser::follow(){
@@ -263,7 +299,7 @@ void parser::addGrammar(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //==========================================Mapping===============================================
-//Mapping Non-terminals and terminals to characters
+//Mapping Non-terminals to characters
 //==========================================Mapping===============================================
 //A=>PROG
 //B=>PROC_DEFS
@@ -292,7 +328,7 @@ void parser::addGrammar(){
 //Y=>
 //Z=>
 //==========================================Mapping===============================================
-//Mapping terminals and terminals to characters
+//Mapping terminals to characters
 //==========================================Mapping==============================================
 //a=>proc
 //b=>userDefinedIdentifier  //this is userdefined and therefore isn't a set in stone string

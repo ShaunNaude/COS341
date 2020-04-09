@@ -1,4 +1,4 @@
-Writing thddis to a file.
+Writing this to a file.
 1:input (tok_input)
 2:( (tok_oparen)
 3:x (var)
