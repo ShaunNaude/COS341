@@ -20,10 +20,19 @@ void parser::start()
 
     //========================Calculating the first===========================================
     int NodeCount = 0;
+    int numP = 47;//47
     int k = 0, kay = 0, ptr = -1, check = 0;
     char done[47], c;
     shared_ptr<nonTerminal> ANode = listNT[k];
-    for(int i=0; i<47; i++, NodeCount++){//counter for all nodes in total
+    shared_ptr<nonTerminal> MyDisp;
+    for(int i=0; i<listNT.size(); i++){
+        MyDisp = listNT[i];
+        for(int j=0; j<MyDisp->Productions.size(); j++){
+            MyProductions.push_back(MyDisp->type+"="+MyDisp->Productions[j]);
+        }
+    }
+    for(int i=0; i<numP/*47*/; i++, NodeCount++){//counter for all nodes in total
+        check = 0;
         if(NodeCount==ANode->Productions.size()){
             NodeCount=0;
             k++;
@@ -37,11 +46,10 @@ void parser::start()
             continue;
         }
         first(ANode,c,0,0);
-        ptr++;
+        ptr+=1;
         done[ptr] = c;
     }
     //========================Calculating the first===========================================
-    shared_ptr<nonTerminal> MyDisp;
     for(int i=0; i<listNT.size(); i++){
         MyDisp = listNT[i];
         cout<<MyDisp->type<<":";
@@ -58,33 +66,28 @@ void parser::start()
 }
 
 void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int RulePos){
-    int cProd = 0;//will be the number of productions in the struct currently
-    int count2 = 0;//counter for ListNT
-    shared_ptr<nonTerminal> ANode = listNT[count2];//ANode is used to increment through all the non-terminals
+    int numP = 47;//47
+    string ffirst(MyNode->firstSet.begin(), MyNode->firstSet.end());
 
-    if(!isupper(c)){//The case where you encounter a terminal
+    if((!isupper(c)&&c!='%')&&(!((int)ffirst.find(c) >= 0))){//The case where you encounter a terminal
         MyNode->firstSet.push_back(c);//push onto first the terminal node
     }
 
-    for(int j=0; j<47; j++, cProd++){
-        if(cProd==ANode->Productions.size()){
-            cProd=0;
-            count2++;
-            ANode=listNT[count2];
-        }
-        if(ANode->type[0]==c){//if the current rule for the grammar(eg: E->MC;   if(E))
-            if(ANode->Productions[cProd].at(0)=='#'){
-                if(ANode->Productions[ProdPos].at(RulePos)=='\0'){
+    for(int j=0; j<numP/*47*/; j++){
+        string ffirst(MyNode->firstSet.begin(), MyNode->firstSet.end());
+        if(MyProductions[j].at(0)==c){//if the current rule for the grammar(eg: E->MC;   if(E))
+            if(MyProductions[j].at(2)=='#'){
+                if((MyProductions[ProdPos].at(RulePos)=='%')&&(!((int)ffirst.find('#') >= 0))){
                     MyNode->firstSet.push_back('#');
                 }else if((ProdPos!=0||RulePos!=0)){//if the current rule for the grammar(eg: E->MC;   if(!'\0'&&!E))
-                    first(ANode, MyNode->Productions[ProdPos].at(RulePos), ProdPos, RulePos+1);//call first of new non-terminal node
-                }else{  
+                    first(MyNode, MyProductions[ProdPos].at(RulePos), ProdPos, RulePos+1);//call first of new non-terminal node
+                }else if(!((int)ffirst.find('#') >= 0)){  
                     MyNode->firstSet.push_back('#');
                 }
-            }else if(!isupper(ANode->Productions[cProd].at(0))){
-                MyNode->firstSet.push_back(ANode->Productions[cProd].at(0));
+            }else if(!isupper((MyProductions[j].at(2)))&&(!((int)ffirst.find(MyProductions[j].at(2)) >= 0))){
+                MyNode->firstSet.push_back(MyProductions[j].at(2));
             }else{
-                first(ANode, ANode->Productions[cProd].at(0), cProd, 1);//calc first for new non-terminal encountered
+                first(MyNode, MyProductions[j].at(2), j, 3);//calc first for new non-terminal encountered
             }
         }
     }
@@ -142,6 +145,37 @@ void parser::follow(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void parser::addGrammar(){
+/*    //============================test data======================================
+    shared_ptr<nonTerminal> S = make_shared<nonTerminal>();
+    S->type = "S";
+    S->Productions.push_back("ACB%");//CODE
+    S->Productions.push_back("CbB%");//CODE;PROC_DEFS
+    S->Productions.push_back("Ba%");
+    //add to list
+    listNT.push_back(S);
+
+    shared_ptr<nonTerminal> A = make_shared<nonTerminal>();
+    A->type = "A";
+    A->Productions.push_back("da%");//CODE
+    A->Productions.push_back("BC%");//CODE;PROC_DEFS
+    //add to list
+    listNT.push_back(A);
+
+    shared_ptr<nonTerminal> B = make_shared<nonTerminal>();
+    B->type = "B";
+    B->Productions.push_back("g%");//CODE
+    B->Productions.push_back("#%");//CODE;PROC_DEFS
+    //add to list
+    listNT.push_back(B);
+
+    shared_ptr<nonTerminal> C = make_shared<nonTerminal>();
+    C->type = "C";
+    C->Productions.push_back("h%");//CODE
+    C->Productions.push_back("#%");//CODE;PROC_DEFS
+    //add to list
+    listNT.push_back(C);
+    //============================test data======================================
+*/
 
     //PROG
     shared_ptr<nonTerminal> PROG = make_shared<nonTerminal>();
