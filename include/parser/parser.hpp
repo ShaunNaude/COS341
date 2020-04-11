@@ -5,6 +5,7 @@
 #include "lexer/token.hpp"
 #include <iostream>
 #include <vector>
+#include <cctype>
 
 class parser {
 
@@ -13,14 +14,16 @@ private:
     struct nonTerminal
     {
         string type; // stores the name of the nonTerminal 
-        vector<string> Productions; // this will store the productions of the non-terminal. 
+        vector<string> Productions; //this will store the productions of the non-terminal. 
         vector<char> followSet;   //this vector holds all the follow items for nonTerminal
         vector<char> firstSet;    //this vector holds all the first items for nonTerminal
     };
 
     vector< shared_ptr<nonTerminal> > listNT; //all the nonTerminals will be stored here.
-    
-    void follow(shared_ptr<nonTerminal> );
+    vector<string> MyProductions; //vector of productions for first().
+
+
+    void follow(shared_ptr<nonTerminal> Current);
     void followfirst();
 
 
@@ -28,7 +31,7 @@ public:
     parser();
     parser(list<shared_ptr <token> >);
     ~parser();
-    void first();
+    void first(shared_ptr<nonTerminal>, char, int, int);
     void start();
     void addGrammar();
 };
