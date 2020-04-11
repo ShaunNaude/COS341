@@ -20,7 +20,7 @@ private:
     };
 
     vector< shared_ptr<nonTerminal> > listNT; //all the nonTerminals will be stored here.
-    
+    vector<string> MyProductions; //vector of productions for first().
 
 
 
