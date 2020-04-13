@@ -22,16 +22,17 @@ private:
     vector< shared_ptr<nonTerminal> > listNT; //all the nonTerminals will be stored here.
     vector<string> MyProductions; //vector of productions for first().
 
-
+    void first(shared_ptr<nonTerminal>, char, int, int);
     void follow(shared_ptr<nonTerminal> Current);
-    void followfirst();
-
+    void followfirst(shared_ptr<nonTerminal> Current, shared_ptr<nonTerminal> other  , string production ,int pos);
+    void addGrammar();
+    shared_ptr<nonTerminal> producer;
+    void add(shared_ptr<nonTerminal> Current, char c);
 
 public:
     parser();
     parser(list<shared_ptr <token> >);
     ~parser();
-    void first(shared_ptr<nonTerminal>, char, int, int);
     void start();
-    void addGrammar();
+    
 };

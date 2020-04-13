@@ -17,7 +17,7 @@ void parser::start()
 {
     //here we need to input the grammar into the parser.
     addGrammar();
-    follow(listNT[0]);
+    
     
     
     
@@ -53,19 +53,14 @@ void parser::start()
         ptr+=1;
         done[ptr] = c;
     }
-    //========================Calculating the first===========================================
-    for(int i=0; i<listNT.size(); i++){
-        MyDisp = listNT[i];
-        cout<<MyDisp->type<<":";
-        for(int j=0; j<MyDisp->firstSet.size(); j++){
-            cout<<MyDisp->firstSet[j]<<",";
-        }
-        cout<<endl;
+
+
+    //================================Calculating the follow====================================
+        for(int i=0; i<listNT.size(); i++){
+        MyDisp = listNT[i];        
+        follow(listNT[i]);
+        
     }
-
-
-
-
 
 }
 
@@ -102,9 +97,10 @@ void parser::follow( shared_ptr<nonTerminal> Current){
     //This function needs to find the follow for the current struct
 
     //if the current is our start symbol we add $ to the followSet
-    if(Current->type == "A")
+    if(Current->type == "S") // A 
     {   
-        Current->followSet.push_back('$');
+        
+        add(Current,'$');
     }
 
     //loop through all non terminals looking for current->type in their productions
@@ -119,6 +115,7 @@ void parser::follow( shared_ptr<nonTerminal> Current){
             for(int i = 0; i<(*it2).length();i++ )
             {
                 string production = (*it2);
+                producer = (*it);
                 if( production[i] ==  Current->type[0] )
                 {
                     
@@ -127,12 +124,46 @@ void parser::follow( shared_ptr<nonTerminal> Current){
                         // Calculate the first of the next 
                         // Non-Terminal in the production 
                         //followfirst() <- we probably need to pass this thing the struct with the ID == production[i+1] and the position ie (i)
+                        //
+                        //find struct with type = i+1 
+
+                        //note i need to fix the case where this for-loop doesnt find anything, basically meaning that the next is a terminal
+
+
+                        if(!isupper(production[i+1]))
+                        {
+                            
+                            add(Current,production[i+1]);
+                            continue;
+                        }
+
+
+
+                        for(auto it3 = listNT.begin() ; it3 != listNT.end() ; it3++)
+                        {
+                      
+                            if((*it3)->type[0] == production[i+1])
+                            {
+                                followfirst( Current ,(*it3) , production , i+1 );
+                                break;
+                            }
+                        }
+
+
+
+
+                        
                     }
     
                     if( production[i+1] == '%' && Current->type != (*it)->type )
                     {
-                        //must find the struct with type=
+                        if((*it)->followSet.empty()==true)
                         follow((*it));
+
+                        else{
+                            for(int k = 0; k<(*it)->followSet.size();k++)
+                                add(Current,(*it)->followSet[k]);
+                        }
                     }
 
 
@@ -149,8 +180,77 @@ void parser::follow( shared_ptr<nonTerminal> Current){
 
 }
 
-void parser::followfirst()
+void parser::followfirst(shared_ptr<nonTerminal> Current, shared_ptr<nonTerminal> other , string production ,int pos)
 {
+
+    if( !isupper(production[pos]) )
+    {
+        add(Current,production[pos]);
+    }
+
+    else 
+    {
+        for(int i = 0 ; i<other->firstSet.size() ; i++)
+        {
+            if(other->firstSet[i] != '#')
+            {
+                
+                add(Current,other->firstSet[i]);
+            }
+
+            else
+            {
+                if(production[pos+1] == '%')
+                {
+                    if(producer->followSet.empty() == true)
+                    {
+                        follow(producer);
+
+                    }
+                    
+                    else{
+                        for(int k = 0 ; k<producer->followSet.size();k++)
+                            add(Current,producer->followSet[k]);
+                    }
+
+
+
+                }
+                else
+                {
+                    //make other the struct with type pos++
+                    //note i need to fix the case where this for-loop doesnt find anything, basically meaning that the next is a terminal
+                     for(auto it3 = listNT.begin() ; it3 != listNT.end() ; it3++)
+                        {
+                            if((*it3)->type[0] == production[pos+1])
+                            {
+                                followfirst( Current ,(*it3) , production , ++pos );
+                                break;
+                            }
+                        }
+
+
+
+                    
+                }
+                
+            }
+            
+
+
+
+
+        }
+
+
+
+
+
+
+    }
+
+
+
 
 }
 
@@ -201,7 +301,7 @@ void parser::followfirst()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void parser::addGrammar(){
-/*    //============================test data======================================
+  /*  //============================test data======================================
     shared_ptr<nonTerminal> S = make_shared<nonTerminal>();
     S->type = "S";
     S->Productions.push_back("ACB%");//CODE
@@ -450,3 +550,21 @@ void parser::addGrammar(){
 //< > # ( ) { } = , ;  /*space not included*/
 //Some integers
 //0 1
+
+void parser::add(shared_ptr<nonTerminal> Current, char c)
+{
+    bool contains =false;
+    for (int i =0 ; i< Current->followSet.size() ; i++)
+    {
+        if(Current->followSet[i] == c)
+        {
+            contains=true;
+            break;
+        }
+    }
+
+    if(contains == false)
+        Current->followSet.push_back(c);
+
+        
+}
