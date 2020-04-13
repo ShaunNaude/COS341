@@ -56,16 +56,19 @@ void parser::start()
 
 
     //================================Calculating the follow====================================
-        for(int i=0; i<listNT.size(); i++){
-        MyDisp = listNT[i];        
-        follow(listNT[i]);
-        for(int i=0;i<MyDisp->firstSet.size();i++)
-        {
-            cout<<MyDisp->firstSet[i]<<"|";
-        }
-        cout<<endl;
+        for(int i=0; i<listNT.size(); i++){        
+            follow(listNT[i]);
         
-    }
+        }
+        for(int i=0;i<listNT.size();i++)
+        {
+            MyDisp = listNT[i];
+            cout<<MyDisp->type<<":";
+            for(int j=0;j<MyDisp->firstSet.size();j++)
+                cout<<listNT[i]->firstSet.at(j)<<"|";
+            cout<<endl;
+        }
+        
 
 }
 
@@ -394,7 +397,7 @@ void parser::addGrammar(){
 
     //CALL
     shared_ptr<nonTerminal> CALL = make_shared<nonTerminal>();
-    CALL->type = "H%";
+    CALL->type = "H";
     CALL->Productions.push_back("b%");//userDefinedIdentifier
     //add to list
     listNT.push_back(CALL);
