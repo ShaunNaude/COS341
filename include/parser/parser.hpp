@@ -21,6 +21,7 @@ private:
 
     vector< shared_ptr<nonTerminal> > listNT; //all the nonTerminals will be stored here.
     vector<string> MyProductions; //vector of productions for first().
+    string ParseTable[35][20];
 
     void first(shared_ptr<nonTerminal>, char, int, int);
     void follow(shared_ptr<nonTerminal> Current);
@@ -28,6 +29,8 @@ private:
     void addGrammar();
     shared_ptr<nonTerminal> producer;
     void add(shared_ptr<nonTerminal> Current, char c);
+    void PopulatPtable();
+    void initTable();
 
 public:
     parser();

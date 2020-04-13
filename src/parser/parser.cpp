@@ -53,33 +53,27 @@ void parser::start()
         ptr+=1;
         done[ptr] = c;
     }
-
-
     //================================Calculating the follow====================================
-        for(int i=0; i<listNT.size(); i++){        
-            follow(listNT[i]);
-        
-        }
-        /*cout<<"First: "<<endl;
-        for(int i=0;i<listNT.size();i++)
-        {
-            MyDisp = listNT[i];
-            cout<<MyDisp->type<<":";
-            for(int j=0;j<MyDisp->firstSet.size();j++)
-                cout<<listNT[i]->firstSet.at(j)<<"|";
-            cout<<endl;
-        }
-        cout<<"Follow: "<<endl;
-        for(int i=0;i<listNT.size();i++)
-        {
-            MyDisp = listNT[i];
-            cout<<MyDisp->type<<":";
-            for(int j=0;j<MyDisp->followSet.size();j++)
-                cout<<listNT[i]->followSet.at(j)<<"|";
-            cout<<endl;
-        }*/
-        
-
+    for(int i=0; i<listNT.size(); i++){        
+        follow(listNT[i]);
+    }
+    /*cout<<"First: "<<endl;
+    for(int i=0;i<listNT.size();i++){
+        MyDisp = listNT[i];
+        cout<<MyDisp->type<<":";
+        for(int j=0;j<MyDisp->firstSet.size();j++)
+            cout<<listNT[i]->firstSet.at(j)<<"|";
+        cout<<endl;
+    }
+    cout<<"Follow: "<<endl;
+    for(int i=0;i<listNT.size();i++){
+        MyDisp = listNT[i];
+        cout<<MyDisp->type<<":";
+        for(int j=0;j<MyDisp->followSet.size();j++)
+            cout<<listNT[i]->followSet.at(j)<<"|";
+        cout<<endl;
+    }*/
+    PopulatPtable();
 }
 
 void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int RulePos){
@@ -198,8 +192,7 @@ void parser::follow( shared_ptr<nonTerminal> Current){
 
 }
 
-void parser::followfirst(shared_ptr<nonTerminal> Current, shared_ptr<nonTerminal> other , string production ,int pos)
-{
+void parser::followfirst(shared_ptr<nonTerminal> Current, shared_ptr<nonTerminal> other , string production ,int pos){
 
     if( !isupper(production[pos]) )
     {
@@ -272,6 +265,21 @@ void parser::followfirst(shared_ptr<nonTerminal> Current, shared_ptr<nonTerminal
 
 }
 
+void parser::PopulatPtable(){
+    initTable();
+    shared_ptr<nonTerminal> MyCurrent;
+    for(int i = 0; i<listNT.size(); i++){
+        MyCurrent = listNT[i];
+        string ffirst(MyCurrent->firstSet.begin(), MyCurrent->firstSet.end());
+        for(int j = 0; j<MyCurrent->Productions.size();j++){
+            for(int count=1; count<35; count++){
+                if(((int)ffirst.find(ParseTable[count][0].at(0)) >= 0)){
+                    ParseTable[count][i+1] = ParseTable[count][i+1]+MyCurrent->type+"="+MyCurrent->Productions[j];//to_string(i);
+                }
+            }
+        }
+    }
+}
 
 
 
@@ -360,14 +368,6 @@ void parser::addGrammar(){
     listNT.push_back(PROG);
 
 
-    //CODE
-    shared_ptr<nonTerminal> CODE = make_shared<nonTerminal>();
-    CODE->type = "D";
-    CODE->Productions.push_back("E%");//INSTR
-    CODE->Productions.push_back("E;D%");//INSTR;CODE
-    //add to list
-    listNT.push_back(CODE);
-
     //PROC_DEFS
     shared_ptr<nonTerminal> PROC_DEFS = make_shared<nonTerminal>();
     PROC_DEFS->type = "B";
@@ -383,6 +383,14 @@ void parser::addGrammar(){
     //add to list
     listNT.push_back(PROC);
 
+    //CODE
+    shared_ptr<nonTerminal> CODE = make_shared<nonTerminal>();
+    CODE->type = "D";
+    CODE->Productions.push_back("E%");//INSTR
+    CODE->Productions.push_back("E;D%");//INSTR;CODE
+    //add to list
+    listNT.push_back(CODE);
+
     //INSTR
     shared_ptr<nonTerminal> INSTR = make_shared<nonTerminal>();
     INSTR->type = "E";
@@ -396,6 +404,13 @@ void parser::addGrammar(){
     //add to list
     listNT.push_back(INSTR);
 
+    //DECL 
+    shared_ptr<nonTerminal> DECL = make_shared<nonTerminal>();
+    DECL->type = "F";
+    DECL->Productions.push_back("LM%");//TYPE&NAME
+    DECL->Productions.push_back("LM;F%");//TYPE&NAME;DECL
+    //add to list
+    listNT.push_back(DECL);
 
     //IO
     shared_ptr<nonTerminal> IO = make_shared<nonTerminal>();
@@ -412,13 +427,31 @@ void parser::addGrammar(){
     //add to list
     listNT.push_back(CALL);
 
-    //DECL 
-    shared_ptr<nonTerminal> DECL = make_shared<nonTerminal>();
-    DECL->type = "F";
-    DECL->Productions.push_back("LM%");//TYPE&NAME
-    DECL->Productions.push_back("LM;F%");//TYPE&NAME;DECL
+    //ASSIGN
+    shared_ptr<nonTerminal> ASSIGN = make_shared<nonTerminal>();
+    ASSIGN->type = "I";
+    ASSIGN->Productions.push_back("N=f%");//VAR=stringLiteral
+    ASSIGN->Productions.push_back("N=N%");//VAR=VAR
+    ASSIGN->Productions.push_back("N=O%");//VAR=NUMEXPR
+    ASSIGN->Productions.push_back("N=R%");//VAR=BOOL
     //add to list
-    listNT.push_back(DECL);
+    listNT.push_back(ASSIGN);
+
+    //COND_BRANCH
+    shared_ptr<nonTerminal> COND_BRANCH = make_shared<nonTerminal>();
+    COND_BRANCH->type = "J";
+    COND_BRANCH->Productions.push_back("k(R)l{D}%");//if(BOOL)then{CODE}
+    COND_BRANCH->Productions.push_back("k(R)l{D}m{D}%");//if(BOOL)then{CODE}else{CODE}
+    //add to list
+    listNT.push_back(COND_BRANCH);
+
+    //COND_LOOP
+    shared_ptr<nonTerminal> COND_LOOP = make_shared<nonTerminal>();
+    COND_LOOP->type = "K";
+    COND_LOOP->Productions.push_back("t(R){D}%");//while(BOOL){CODE}
+    COND_LOOP->Productions.push_back("u(N=0;N<N;N=h(N,1)){D}%");//for(VAR=0;VAR<VAR;VAR=add(VAR,1)){CODE}
+    //add to list
+    listNT.push_back(COND_LOOP);
 
     //TYPE 
     shared_ptr<nonTerminal> TYPE = make_shared<nonTerminal>();
@@ -443,16 +476,6 @@ void parser::addGrammar(){
     //add to list
     listNT.push_back(VAR);
 
-    //ASSIGN
-    shared_ptr<nonTerminal> ASSIGN = make_shared<nonTerminal>();
-    ASSIGN->type = "I";
-    ASSIGN->Productions.push_back("N=f%");//VAR=stringLiteral
-    ASSIGN->Productions.push_back("N=N%");//VAR=VAR
-    ASSIGN->Productions.push_back("N=O%");//VAR=NUMEXPR
-    ASSIGN->Productions.push_back("N=R%");//VAR=BOOL
-    //add to list
-    listNT.push_back(ASSIGN);
-
     //NUMEXPR
     shared_ptr<nonTerminal> NUMEXPR = make_shared<nonTerminal>();
     NUMEXPR->type = "O";
@@ -473,7 +496,7 @@ void parser::addGrammar(){
 
     //BOOL
     shared_ptr<nonTerminal> BOOL = make_shared<nonTerminal>();
-    BOOL->type = "R";
+    BOOL->type = "Q";
     BOOL->Productions.push_back("n(N,N)%");//eq(VAR,VAR)
     BOOL->Productions.push_back("(N<N)%");//(VAR<VAR)
     BOOL->Productions.push_back("(N>N)%");//(VAR>VAR)
@@ -485,22 +508,6 @@ void parser::addGrammar(){
     BOOL->Productions.push_back("N%");//VAR
     //add to list
     listNT.push_back(BOOL);
-
-    //COND_BRANCH
-    shared_ptr<nonTerminal> COND_BRANCH = make_shared<nonTerminal>();
-    COND_BRANCH->type = "J";
-    COND_BRANCH->Productions.push_back("k(R)l{D}%");//if(BOOL)then{CODE}
-    COND_BRANCH->Productions.push_back("k(R)l{D}m{D}%");//if(BOOL)then{CODE}else{CODE}
-    //add to list
-    listNT.push_back(COND_BRANCH);
-
-    //COND_LOOP
-    shared_ptr<nonTerminal> COND_LOOP = make_shared<nonTerminal>();
-    COND_LOOP->type = "S";
-    COND_LOOP->Productions.push_back("t(R){D}%");//while(BOOL){CODE}
-    COND_LOOP->Productions.push_back("u(N=0;N<N;N=h(N,1)){D}%");//for(VAR=0;VAR<VAR;VAR=add(VAR,1)){CODE}
-    //add to list
-    listNT.push_back(COND_LOOP);
 
     return;
 }
@@ -525,9 +532,9 @@ void parser::addGrammar(){
 //N=>VAR
 //O=>NUMEXPR
 //P=>CALC
-//Q=>COND_BRANCH
-//R=>BOOL
-//S=>COND_LOOP
+//Q=>BOOL
+//R=>
+//S=>
 //T=>
 //U=>
 //V=>
@@ -585,4 +592,28 @@ void parser::add(shared_ptr<nonTerminal> Current, char c)
         Current->followSet.push_back(c);
 
         
+}
+
+void parser::initTable(){
+    char myC = 'A';
+    for(int i = 0; i<19; i++){
+        string s(1, myC+i);
+        ParseTable[0][i+1]=s;
+    }
+    myC='a';
+    for(int i = 0; i<24; i++){
+        string s(1, myC+i);
+        ParseTable[i+1][0]=s;
+    }
+    ParseTable[25][0]='<';
+    ParseTable[26][0]='>';
+    ParseTable[27][0]='(';
+    ParseTable[28][0]=')';
+    ParseTable[29][0]='{';
+    ParseTable[30][0]='}';
+    ParseTable[31][0]='=';
+    ParseTable[32][0]=',';
+    ParseTable[33][0]=';';
+    ParseTable[34][0]='$';
+    
 }
