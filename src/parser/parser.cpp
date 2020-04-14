@@ -82,7 +82,15 @@ void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int Rule
     for(int j=0; j<numP; j++){
         string ffirst(MyNode->firstSet.begin(), MyNode->firstSet.end());
         if(MyProductions[j].at(0)==c){//if the current rule for the grammar(eg: E->MC;   if(E))
-            if(!isupper((MyProductions[j].at(2)))){
+            if(MyProductions[j].at(2)=='#'){
+                if((MyProductions[ProdPos].at(RulePos)=='%')&&(!((int)ffirst.find('#') >= 0))){
+                    MyNode->firstSet.push_back('#');
+                }else if((ProdPos!=0||RulePos!=0)){//if the current rule for the grammar(eg: E->MC;   if(!'\0'&&!E))
+                    first(MyNode, MyProductions[ProdPos].at(RulePos), ProdPos, RulePos+1, nC);//call first of new non-terminal node
+                }else if(!((int)ffirst.find('#') >= 0)){  
+                    MyNode->firstSet.push_back('#');
+                }
+            }else if(!isupper((MyProductions[j].at(2)))){
                 if((!((int)ffirst.find(MyProductions[j].at(2)) >= 0))){
                     MyNode->firstSet.push_back(MyProductions[j].at(2));
                 }

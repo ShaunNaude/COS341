@@ -32,6 +32,7 @@ private:
     void add(shared_ptr<nonTerminal> Current, char c);
     void PopulatPtable(string, string, string);//production, terminal, non-terminal
     void initTable();
+    string map(string);
 
 public:
     parser();
