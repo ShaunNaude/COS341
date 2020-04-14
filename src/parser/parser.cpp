@@ -483,6 +483,79 @@ void parser::addGrammar(){
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+string parser::map(string original){
+    string mapped = "";
+    if(original == "tok_proc"){
+        mapped = "a";
+    }else if(original == "var"){
+        mapped = "b";
+    }else if(original == "tok_halt"){
+        mapped = "c";
+    }else if(original == "tok_input"){
+        mapped = "d";
+    }else if(original == "tok_output"){
+        mapped = "e";
+    }else if(original == "tok_String_literal"){
+        mapped = "f";
+    }else if(original == "tok_int"){
+        mapped = "g";
+    }else if(original == "tok_add"){
+        mapped = "h";
+    }else if(original == "tok_sub"){
+        mapped = "i";
+    }else if(original == "tok_mult"){
+        mapped = "j";
+    }else if(original == "tok_if"){
+        mapped = "k";
+    }else if(original == "tok_then"){
+        mapped = "l";
+    }else if(original == "tok_else"){
+        mapped = "m";
+    }else if(original == "tok_eq"){
+        mapped = "n";
+    }else if(original == "tok_not"){
+        mapped = "o";
+    }else if(original == "tok_and"){
+        mapped = "p";
+    }else if(original == "tok_or"){
+        mapped = "q";
+    }else if(original == "tok_T"){
+        mapped = "r";
+    }else if(original == "tok_F"){
+        mapped = "s";
+    }else if(original == "tok_while"){
+        mapped = "t";
+    }else if(original == "tok_for"){
+        mapped = "u";
+    }else if(original == "tok_num"){
+        mapped = "v";
+    }else if(original == "tok_string"){
+        mapped = "w";
+    }else if(original == "tok_bool"){
+        mapped = "x";
+    }else if(original == "tok_lthan"){
+        mapped = "<";
+    }else if(original == "tok_gthan"){
+        mapped = ">";
+    }else if(original == "#"){
+        mapped = "#";
+    }else if(original == "tok_oparen"){
+        mapped = "(";
+    }else if(original == "tok_cparen"){
+        mapped = ")";
+    }else if(original == "tok_obrace"){
+        mapped = "{";
+    }else if(original == "tok_cbrace"){
+        mapped = "}";
+    }else if(original == "tok_equal"){
+        mapped = "=";
+    }else if(original == "tok_comma"){
+        mapped = ",";
+    }else if(original == "tok_semicolon"){
+        mapped = ";";
+    }
+    return mapped;
+}
 //==========================================Mapping===============================================
 //Mapping Non-terminals to characters
 //==========================================Mapping===============================================
