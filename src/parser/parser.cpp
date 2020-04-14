@@ -32,29 +32,22 @@ void parser::start()
             MyProductions.push_back(MyDisp->type+"="+MyDisp->Productions[j]);
         }
     }
-    for(int i=0; i<numP/*47*/; i++, NodeCount++){//counter for all nodes in total
+    for(int i=0; i<numP; i++, NodeCount++){//counter for all nodes in total
         check = 0;
         if(NodeCount==ANode->Productions.size()){
             NodeCount=0;
             k++;
             ANode=listNT[k];
         }
-        c = ANode->type[0];
-        //for(kay=0; kay<=ptr; kay++){
-            //if(c==done[kay]){check=1;}
-        //}
-        //if(check==1){
-            //continue;
-        //}
+        c = ANode->Productions[NodeCount].at(0);//type[0];
+        TheFirst.clear();
         first(ANode,c,0,0,NodeCount);
-        //ptr+=1;
-        //done[ptr] = c;
     }
     //================================Calculating the follow====================================
     for(int i=0; i<listNT.size(); i++){        
         follow(listNT[i]);
     }
-    /*cout<<"First: "<<endl;
+    cout<<"First: "<<endl;
     for(int i=0;i<listNT.size();i++){
         MyDisp = listNT[i];
         cout<<MyDisp->type<<":";
@@ -63,7 +56,7 @@ void parser::start()
         cout<<endl;
     }
     cout<<"Follow: "<<endl;
-    for(int i=0;i<listNT.size();i++){
+    /*for(int i=0;i<listNT.size();i++){
         MyDisp = listNT[i];
         cout<<MyDisp->type<<":";
         for(int j=0;j<MyDisp->followSet.size();j++)
@@ -73,40 +66,34 @@ void parser::start()
     //PopulatPtable();
 }
 
-void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int RulePos, int Pnum){
-    int numP = 47;//47
+void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int RulePos, int nC){
+    int numP = 47;
     string ffirst(MyNode->firstSet.begin(), MyNode->firstSet.end());
 
     if((!isupper(c)&&c!='%')){
         string sc(1, c);
-        PopulatPtable(MyNode->Productions[Pnum], sc, MyNode->type);
+        PopulatPtable(MyNode->Productions[nC], sc, MyNode->type);
     }
     if((!isupper(c)&&c!='%')&&(!((int)ffirst.find(c) >= 0))){//The case where you encounter a terminal
         MyNode->firstSet.push_back(c);//push onto first the terminal node
+        return;
     }
 
-    for(int j=0; j<numP/*47*/; j++){
+    for(int j=0; j<numP; j++){
         string ffirst(MyNode->firstSet.begin(), MyNode->firstSet.end());
         if(MyProductions[j].at(0)==c){//if the current rule for the grammar(eg: E->MC;   if(E))
-            if(MyProductions[j].at(2)=='#'){
-                if((MyProductions[ProdPos].at(RulePos)=='%')&&(!((int)ffirst.find('#') >= 0))){
-                    MyNode->firstSet.push_back('#');
-                }else if((ProdPos!=0||RulePos!=0)){//if the current rule for the grammar(eg: E->MC;   if(!'\0'&&!E))
-                    first(MyNode, MyProductions[ProdPos].at(RulePos), ProdPos, RulePos+1, Pnum);//call first of new non-terminal node
-                }else if(!((int)ffirst.find('#') >= 0)){  
-                    MyNode->firstSet.push_back('#');
-                }
-            }else if(!isupper((MyProductions[j].at(2)))){
+            if(!isupper((MyProductions[j].at(2)))){
                 if((!((int)ffirst.find(MyProductions[j].at(2)) >= 0))){
                     MyNode->firstSet.push_back(MyProductions[j].at(2));
                 }
+                
                 char t = MyProductions[j].at(2);
-                if((!isupper(t)&&c!='%')){
+                if((!isupper(t)&&t!='%')){//&&(!((int)ffirst.find(t) >= 0))
                     string sc(1, t);
-                    PopulatPtable(MyNode->Productions[Pnum], sc, MyNode->type);
+                    PopulatPtable(MyNode->Productions[nC], sc, MyNode->type);
                 }
             }else{
-                first(MyNode, MyProductions[j].at(2), j, 3, Pnum);//calc first for new non-terminal encountered
+                first(MyNode, MyProductions[j].at(2), j, 3, nC);//calc first for new non-terminal encountered
             }
         }
     }
@@ -243,14 +230,13 @@ void parser::PopulatPtable(string P, string t, string Nt){
         for(int j=1; j<20;j++){
             if(ParseTable[0][j] == Nt){
                 if(ParseTable[i][0] == t){
-                    for(int i = 0; i< doneR.size(); i++){
-                        if(doneR[i]==P){
-                            check = true;
-                        }
+                    size_t found = ParseTable[i][j].find(P);
+                    if(found != string::npos){
+                        check = true;
                     }
+                    
                     if(!check){
-                        ParseTable[i][j]=ParseTable[i][j]+Nt+"->"+P;
-                        doneR.push_back(P);
+                        ParseTable[i][j]=ParseTable[i][j]+P;//Nt+"|";//ParseTable[i][j]=ParseTable[i][j]+Nt+":"+P;
                     }
                 }
             }

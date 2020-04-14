@@ -19,10 +19,10 @@ private:
         vector<char> firstSet;    //this vector holds all the first items for nonTerminal
     };
 
+    vector<char> TheFirst;
     vector< shared_ptr<nonTerminal> > listNT; //all the nonTerminals will be stored here.
     vector<string> MyProductions; //vector of productions for first().
     string ParseTable[35][20];
-    vector<string> doneR;
 
     void first(shared_ptr<nonTerminal>, char, int, int, int);
     void follow(shared_ptr<nonTerminal> Current);
