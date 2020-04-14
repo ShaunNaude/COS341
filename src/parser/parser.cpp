@@ -487,7 +487,7 @@ string parser::map(string original){
     string mapped = "";
     if(original == "tok_proc"){
         mapped = "a";
-    }else if(original == "var"){
+    }else if(original == "var"){//user defined 
         mapped = "b";
     }else if(original == "tok_halt"){
         mapped = "c";
@@ -497,7 +497,7 @@ string parser::map(string original){
         mapped = "e";
     }else if(original == "tok_String_literal"){
         mapped = "f";
-    }else if(original == "tok_int"){
+    }else if(original == "tok_int"){//user defined integer
         mapped = "g";
     }else if(original == "tok_add"){
         mapped = "h";
@@ -553,6 +553,10 @@ string parser::map(string original){
         mapped = ",";
     }else if(original == "tok_semicolon"){
         mapped = ";";
+    }else if(original == "0"){
+        mapped = "0";
+    }else if(original == "1"){
+        mapped = "1";
     }
     return mapped;
 }
@@ -658,5 +662,4 @@ void parser::initTable(){
     ParseTable[32][0]=',';
     ParseTable[33][0]=';';
     ParseTable[34][0]='$';
-    
 }
