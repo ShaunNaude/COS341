@@ -17,10 +17,7 @@ void parser::start()
 {
     //here we need to input the grammar into the parser.
     addGrammar();
-    
-    
-    
-    
+    initTable();
 
     //========================Calculating the first===========================================
     int NodeCount = 0;
@@ -35,29 +32,22 @@ void parser::start()
             MyProductions.push_back(MyDisp->type+"="+MyDisp->Productions[j]);
         }
     }
-    for(int i=0; i<numP/*47*/; i++, NodeCount++){//counter for all nodes in total
+    for(int i=0; i<numP; i++, NodeCount++){//counter for all nodes in total
         check = 0;
         if(NodeCount==ANode->Productions.size()){
             NodeCount=0;
             k++;
             ANode=listNT[k];
         }
-        c = ANode->type[0];
-        for(kay=0; kay<=ptr; kay++){
-            if(c==done[kay]){check=1;}
-        }
-        if(check==1){
-            continue;
-        }
-        first(ANode,c,0,0);
-        ptr+=1;
-        done[ptr] = c;
+        c = ANode->Productions[NodeCount].at(0);//type[0];
+        TheFirst.clear();
+        first(ANode,c,0,0,NodeCount);
     }
     //================================Calculating the follow====================================
     for(int i=0; i<listNT.size(); i++){        
         follow(listNT[i]);
     }
-    /*cout<<"First: "<<endl;
+    cout<<"First: "<<endl;
     for(int i=0;i<listNT.size();i++){
         MyDisp = listNT[i];
         cout<<MyDisp->type<<":";
@@ -66,46 +56,50 @@ void parser::start()
         cout<<endl;
     }
     cout<<"Follow: "<<endl;
-    for(int i=0;i<listNT.size();i++){
+    /*for(int i=0;i<listNT.size();i++){
         MyDisp = listNT[i];
         cout<<MyDisp->type<<":";
         for(int j=0;j<MyDisp->followSet.size();j++)
             cout<<listNT[i]->followSet.at(j)<<"|";
         cout<<endl;
     }*/
-    PopulatPtable();
+    //PopulatPtable();
 }
 
-void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int RulePos){
-    int numP = 47;//47
+void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int RulePos, int nC){
+    int numP = 47;
     string ffirst(MyNode->firstSet.begin(), MyNode->firstSet.end());
 
+    if((!isupper(c)&&c!='%')){
+        string sc(1, c);
+        PopulatPtable(MyNode->Productions[nC], sc, MyNode->type);
+    }
     if((!isupper(c)&&c!='%')&&(!((int)ffirst.find(c) >= 0))){//The case where you encounter a terminal
         MyNode->firstSet.push_back(c);//push onto first the terminal node
+        return;
     }
 
-    for(int j=0; j<numP/*47*/; j++){
+    for(int j=0; j<numP; j++){
         string ffirst(MyNode->firstSet.begin(), MyNode->firstSet.end());
         if(MyProductions[j].at(0)==c){//if the current rule for the grammar(eg: E->MC;   if(E))
-            if(MyProductions[j].at(2)=='#'){
-                if((MyProductions[ProdPos].at(RulePos)=='%')&&(!((int)ffirst.find('#') >= 0))){
-                    MyNode->firstSet.push_back('#');
-                }else if((ProdPos!=0||RulePos!=0)){//if the current rule for the grammar(eg: E->MC;   if(!'\0'&&!E))
-                    first(MyNode, MyProductions[ProdPos].at(RulePos), ProdPos, RulePos+1);//call first of new non-terminal node
-                }else if(!((int)ffirst.find('#') >= 0)){  
-                    MyNode->firstSet.push_back('#');
+            if(!isupper((MyProductions[j].at(2)))){
+                if((!((int)ffirst.find(MyProductions[j].at(2)) >= 0))){
+                    MyNode->firstSet.push_back(MyProductions[j].at(2));
                 }
-            }else if(!isupper((MyProductions[j].at(2)))&&(!((int)ffirst.find(MyProductions[j].at(2)) >= 0))){
-                MyNode->firstSet.push_back(MyProductions[j].at(2));
+                
+                char t = MyProductions[j].at(2);
+                if((!isupper(t)&&t!='%')){//&&(!((int)ffirst.find(t) >= 0))
+                    string sc(1, t);
+                    PopulatPtable(MyNode->Productions[nC], sc, MyNode->type);
+                }
             }else{
-                first(MyNode, MyProductions[j].at(2), j, 3);//calc first for new non-terminal encountered
+                first(MyNode, MyProductions[j].at(2), j, 3, nC);//calc first for new non-terminal encountered
             }
         }
     }
 }
 
 void parser::follow( shared_ptr<nonTerminal> Current){
-
     //This function needs to find the follow for the current struct
 
     //if the current is our start symbol we add $ to the followSet
@@ -130,7 +124,6 @@ void parser::follow( shared_ptr<nonTerminal> Current){
                 producer = (*it);
                 if( production[i] ==  Current->type[0] )
                 {
-                    
                     if(production[i+1] != '%' )
                     {
                         // Calculate the first of the next 
@@ -140,56 +133,34 @@ void parser::follow( shared_ptr<nonTerminal> Current){
                         //find struct with type = i+1 
 
                         //note i need to fix the case where this for-loop doesnt find anything, basically meaning that the next is a terminal
-
-
                         if(!isupper(production[i+1]))
                         {
                             
                             add(Current,production[i+1]);
                             continue;
                         }
-
-
-
                         for(auto it3 = listNT.begin() ; it3 != listNT.end() ; it3++)
                         {
-                      
                             if((*it3)->type[0] == production[i+1])
                             {
                                 followfirst( Current ,(*it3) , production , i+1 );
                                 break;
                             }
                         }
-
-
-
-
-                        
                     }
-    
                     if( production[i+1] == '%' && Current->type != (*it)->type )
                     {
                         if((*it)->followSet.empty()==true)
-                        follow((*it));
-
+                            follow((*it));
                         else{
                             for(int k = 0; k<(*it)->followSet.size();k++)
                                 add(Current,(*it)->followSet[k]);
                         }
                     }
-
-
                 }
             }
-
         }
-
     }
-
-
-
-
-
 }
 
 void parser::followfirst(shared_ptr<nonTerminal> Current, shared_ptr<nonTerminal> other , string production ,int pos){
@@ -198,17 +169,14 @@ void parser::followfirst(shared_ptr<nonTerminal> Current, shared_ptr<nonTerminal
     {
         add(Current,production[pos]);
     }
-
     else 
     {
         for(int i = 0 ; i<other->firstSet.size() ; i++)
         {
             if(other->firstSet[i] != '#')
-            {
-                
+            { 
                 add(Current,other->firstSet[i]);
             }
-
             else
             {
                 if(production[pos+1] == '%')
@@ -216,57 +184,33 @@ void parser::followfirst(shared_ptr<nonTerminal> Current, shared_ptr<nonTerminal
                     if(producer->followSet.empty() == true)
                     {
                         follow(producer);
-
                     }
-                    
                     else{
                         for(int k = 0 ; k<producer->followSet.size();k++)
                             add(Current,producer->followSet[k]);
                     }
-
-
-
                 }
                 else
                 {
                     //make other the struct with type pos++
                     //note i need to fix the case where this for-loop doesnt find anything, basically meaning that the next is a terminal
-                     for(auto it3 = listNT.begin() ; it3 != listNT.end() ; it3++)
+                    for(auto it3 = listNT.begin() ; it3 != listNT.end() ; it3++)
+                    {
+                        if((*it3)->type[0] == production[pos+1])
                         {
-                            if((*it3)->type[0] == production[pos+1])
-                            {
-                                followfirst( Current ,(*it3) , production , ++pos );
-                                break;
-                            }
+                            followfirst( Current ,(*it3) , production , ++pos );
+                            break;
                         }
-
-
-
-                    
+                    }
                 }
                 
             }
-            
-
-
-
-
         }
-
-
-
-
-
-
     }
-
-
-
-
 }
 
-void parser::PopulatPtable(){
-    initTable();
+/*void parser::PopulatPtable(){
+
     shared_ptr<nonTerminal> MyCurrent;
     for(int i = 0; i<listNT.size(); i++){
         MyCurrent = listNT[i];
@@ -279,8 +223,26 @@ void parser::PopulatPtable(){
             }
         }
     }
+}*/
+void parser::PopulatPtable(string P, string t, string Nt){
+    bool check = false;
+    for(int i = 1; i<35;i++){
+        for(int j=1; j<20;j++){
+            if(ParseTable[0][j] == Nt){
+                if(ParseTable[i][0] == t){
+                    size_t found = ParseTable[i][j].find(P);
+                    if(found != string::npos){
+                        check = true;
+                    }
+                    
+                    if(!check){
+                        ParseTable[i][j]=ParseTable[i][j]+P;//Nt+"|";//ParseTable[i][j]=ParseTable[i][j]+Nt+":"+P;
+                    }
+                }
+            }
+        }
+    }
 }
-
 
 
 
