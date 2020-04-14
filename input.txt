@@ -1,15 +1,3 @@
-input(x);#
-n = x;#
-#
-#
-num = -cunt;#
-num1 = -08998;#
-num2 = 0998;#
-r = "ForgotQuotes#
-checknumber;#
-if (eq(r, s)) then {#
-output(s)#
-} else {#
-output( r )#
-};#
-halt;#
+num i;#
+input(i);#
+output(i);#
