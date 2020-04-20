@@ -1,15 +1,41 @@
-input(x);#
-n = x;#
-r = "unknown@@";#
-s = "evensdfasdfasdfasf";#
-num = -cunt;#
-num1 = -08998;#
-num2 = 0998;#
-r = "ForgotQuotes
-checknumber;#
-if (eq(r, s)) then {#
-output(s)#
-} else {#
-output( r )#
+num zero;#
+zero = 0;#
+
+num rax;#
+num rbx;#
+num rcx;#
+
+rax = 0;#
+rbx = 0;#
+rcx = 0;#
+
+while (T) {#
+  input(rbx);#
+  input(rcx);#
+  gcd;#
+  output(rax)#
 };#
-halt;#
+
+proc mod {#
+  if (eq(rbx, rcx)) then {#
+    rax = 0#
+  } else {#
+    rax = rbx;#
+    while ((rbx > zero)) {#
+      rax = rbx;#
+      rbx = sub(rbx, rcx)#
+    };#
+    if (eq(rbx, zero)) then {#
+      rax = 0#
+    }#
+  }#
+}#
+
+proc gcd {#
+  while (not eq(rcx, zero)) {#
+    mod;#
+    rbx = rcx;#
+    rcx = rax#
+  };#
+  rax = rbx#
+}#

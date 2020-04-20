@@ -58,9 +58,9 @@ int main() {
     //get tokens from lexer
     list<shared_ptr <token> > tokenList = lex->tokenList;
 
-    //create parser
-    //shared_ptr<parser> par = make_shared<parser>(tokenList);
-    //par->start();
+   // create parser;
+    shared_ptr<parser> par = make_shared<parser>(tokenList);
+    par->start();
 
 
 

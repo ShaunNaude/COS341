@@ -21,7 +21,7 @@ private:
         vector<char> firstSet;    //this vector holds all the first items for nonTerminal
     };
 
-    vector<string> stack; // this is going to be the stack we use for parsing, we just going to pretend the vector is a stack
+    vector<pair<string,int>> stack; // this is going to be the stack we use for parsing, we just going to pretend the vector is a stack
     vector<char> TheFirst;
     vector< shared_ptr<nonTerminal> > listNT; //all the nonTerminals will be stored here.
     vector<string> MyProductions; //vector of productions for first().

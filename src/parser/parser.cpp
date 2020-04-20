@@ -70,6 +70,7 @@ void parser::start()
 
 
     doMapping();
+    Parse();
 
 
 }
@@ -581,19 +582,129 @@ void parser::doMapping()
 
 void parser::Parse()
 {
+    pair<string,int> p;
     int currentParentID;
     Tree = make_shared<SyntaxTree>();
+    auto it = tokenList.begin();
 
-
-    stack.push_back("$"); // initail item on the stack.
-    stack.push_back("A"); //adds start symbol.
+    //fuck i need to make the stack store pairs, string,int the int will be its parents ID
+    //TODO
+    p.first = "$";
+    p.second = -1;
+    stack.push_back(p); // initail item on the stack.
 
     currentParentID=Tree->createTree("A");
-
+    p.first = "A";
+    p.second = currentParentID;
+    stack.push_back(p);
+    string top;
     
         //this loop goes through all tokens
-    for(auto it = tokenList.begin() ; it!=tokenList.end() ; it++ )
+    while(it != tokenList.end())
     {
+        top = stack[stack.size() - 1 ].first;
+        currentParentID = stack[stack.size() - 1 ].second;
+        stack.pop_back();
+//================if we reach end of stack======================================
+        if(top == "$")
+        {
+            //if we get here we are at the end of parse
+            break;
+        }
+//================if we have a terminal===========================================
+        if( !isupper(top[0]) )
+        {
+            if( top == (*it)->token_str )
+                {
+                    //terminal match
+                    Tree->addNode(currentParentID,top);
+                    it++;
+                    continue;
+                }
+            else
+            {
+                cout<<(*it)->token_str<<endl;
+                //terminal does not match.
+                //display error
+            }
+            
+                
+        }
+//==========if we have a non-terminal===============================================  
+    else{
+        int row;
+        //parsetable[35][20]
+       for(int i = 0 ; i<35 ; i++)
+       {
+           if(ParseTable[i][0] == (*it)->token_str )
+           {
+               row = i;
+           }
+       }
+
+       int col;
+
+       for(int i = 0 ; i<20 ; i++)
+       {
+           if(ParseTable[0][i] == top )
+           {
+               col = i;
+           }
+       }
+
+        
+
+
+
+
+
+//==========not a conditional======================================================
+
+            
+       string rules = ParseTable[row][col];
+
+      string rule1 = rules.substr(0,rules.find_first_of('%'));
+      int k = rules.find_first_of('%')+1;
+      string rule2 = rules.substr(k,rules.find_last_of('%') - k);
+
+      //put longest rule onto stack
+      string temp;
+
+      if(rule1.length() > rule2.length())
+      {
+          for(int k = rule1.length() -1 ; k>-1 ; --k)
+          {
+            temp.push_back(rule1[k]);
+            p.second = Tree->addNode(currentParentID,temp);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+
+      }
+    else{
+        for(int k = rule2.length() - 1 ; k>-1 ; --k)
+          {
+            temp.push_back(rule2[k]);
+            p.second = Tree->addNode(currentParentID,temp);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+
+    }
+
+      
+        
+
+
+    
+//===========code to handle conditionals==============================
+    else{
+        //here we put the code to handle conditions
+    }
+    }
+        
 
 
     }
