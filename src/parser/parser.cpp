@@ -64,6 +64,14 @@ void parser::start()
         cout<<endl;
     }*/
     //PopulatPtable();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    doMapping();
+
+
 }
 
 void parser::first(shared_ptr<nonTerminal> MyNode, char c, int ProdPos, int RulePos, int nC){
@@ -251,49 +259,6 @@ void parser::PopulatPtable(string P, string t, string Nt){
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void parser::addGrammar(){
@@ -560,68 +525,7 @@ string parser::map(string original){
     }
     return mapped;
 }
-//==========================================Mapping===============================================
-//Mapping Non-terminals to characters
-//==========================================Mapping===============================================
-//A=>PROG
-//B=>PROC_DEFS
-//C=>PROC
-//D=>CODE
-//E=>INSTR
-//F=>DECL
-//G=>IO
-//H=>CALL
-//I=>ASSIGN
-//J=>COND_BRANCH
-//K=>COND_LOOP
-//L=>TYPE
-//M=>NAME
-//N=>VAR
-//O=>NUMEXPR
-//P=>CALC
-//Q=>BOOL
-//R=>
-//S=>
-//T=>
-//U=>
-//V=>
-//W=>
-//X=>
-//Y=>
-//Z=>
-//==========================================Mapping===============================================
-//Mapping terminals to characters
-//==========================================Mapping==============================================
-//a=>proc
-//b=>userDefinedIdentifier  //this is userdefined and therefore isn't a set in stone string
-//c=>halt
-//d=>input
-//e=>output
-//f=>stringLiteral  //this is userdefined and therefore isn't a set in stone string
-//g=>integerLiteral  //this is userdefined and therefore isn't a set in stone string
-//h=>add
-//i=>sub
-//j=>mult
-//k=>if
-//l=>then
-//m=>else
-//n=>eq
-//o=>not
-//p=>and
-//q=>or
-//r=>T
-//s=>F
-//t=>while
-//u=>for
-//v=>num
-//w=>string
-//x=>bool
-//y=>
-//z=>
-//All operators
-//< > # ( ) { } = , ;  /*space not included*/
-//Some integers
-//0 1
+
 
 void parser::add(shared_ptr<nonTerminal> Current, char c)
 {
@@ -662,4 +566,41 @@ void parser::initTable(){
     ParseTable[32][0]=',';
     ParseTable[33][0]=';';
     ParseTable[34][0]='$';
+}
+
+void parser::doMapping()
+{
+    for(auto it = tokenList.begin() ; it != tokenList.end() ; it++ )
+    {
+        //makes our tokenList contain the new mapping.
+        (*it)->token_str = map((*it)->token_type);    
+    }
+
+    
+}
+
+void parser::Parse()
+{
+    int currentParentID;
+    Tree = make_shared<SyntaxTree>();
+
+
+    stack.push_back("$"); // initail item on the stack.
+    stack.push_back("A"); //adds start symbol.
+
+    currentParentID=Tree->createTree("A");
+
+    
+        //this loop goes through all tokens
+    for(auto it = tokenList.begin() ; it!=tokenList.end() ; it++ )
+    {
+
+
+    }
+
+
+
+
+
+
 }

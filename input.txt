@@ -1,3 +1,15 @@
-num i;#
-input(i);#
-output(i);#
+input(x);#
+n = x;#
+r = "unknown@@";#
+s = "evensdfasdfasdfasf";#
+num = -cunt;#
+num1 = -08998;#
+num2 = 0998;#
+r = "ForgotQuotes
+checknumber;#
+if (eq(r, s)) then {#
+output(s)#
+} else {#
+output( r )#
+};#
+halt;#

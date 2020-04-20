@@ -1,0 +1,62 @@
+//==========================================Mapping===============================================
+//Mapping Non-terminals to characters
+//==========================================Mapping===============================================
+//A=>PROG
+//B=>PROC_DEFS
+//C=>PROC
+//D=>CODE
+//E=>INSTR
+//F=>DECL
+//G=>IO
+//H=>CALL
+//I=>ASSIGN
+//J=>COND_BRANCH
+//K=>COND_LOOP
+//L=>TYPE
+//M=>NAME
+//N=>VAR
+//O=>NUMEXPR
+//P=>CALC
+//Q=>BOOL
+//R=>
+//S=>
+//T=>
+//U=>
+//V=>
+//W=>
+//X=>
+//Y=>
+//Z=>
+//==========================================Mapping===============================================
+//Mapping terminals to characters
+//==========================================Mapping==============================================
+//a=>proc
+//b=>userDefinedIdentifier  //this is userdefined and therefore isn't a set in stone string
+//c=>halt
+//d=>input
+//e=>output
+//f=>stringLiteral  //this is userdefined and therefore isn't a set in stone string
+//g=>integerLiteral  //this is userdefined and therefore isn't a set in stone string
+//h=>add
+//i=>sub
+//j=>mult
+//k=>if
+//l=>then
+//m=>else
+//n=>eq
+//o=>not
+//p=>and
+//q=>or
+//r=>T
+//s=>F
+//t=>while
+//u=>for
+//v=>num
+//w=>string
+//x=>bool
+//y=>
+//z=>
+//All operators
+//< > # ( ) { } = , ;  /*space not included*/
+//Some integers
+//0 1
