@@ -1,6 +1,7 @@
 #include <iostream>
 #include <lexer/lexer.hpp>
 #include <parser/parser.hpp>
+#include <syntaxAnalysis/syntaxAnalysis.hpp>
 
 
 using namespace std;
@@ -69,7 +70,13 @@ int main() {
     par->start();
 
 
+    //if no errors continue
+    if(par->syntaxError == false)
+    {
+        shared_ptr<syntaxAnalysis> SA = make_shared<syntaxAnalysis>(tokenList,par->Tree);
 
+
+    }
 
 
 //=======================================================================================

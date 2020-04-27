@@ -258,12 +258,34 @@ int lexer::isKeyword(string Input, int start){//this function will check for val
             return -1;
         }
     }else if(Input.at(end) == 'T'){
-        if(!OperatorNext(Input.at(end+2))){return -1;};
+        if(!OperatorNext(Input.at(end+1))){
+            
+            if(Input.at(end+1) == '#')
+                {
+                    AddNode("tok_T", start, end, "T");
+                    currentCol+=1;
+                    return end+1;
+
+                }
+            
+            
+            return -1;};
         AddNode("tok_T", start, end, "T");
         currentCol+=1;
         return end+1;
     }else if(Input.at(end) == 'F'){
-        if(!OperatorNext(Input.at(end+2))){return -1;};
+        if(!OperatorNext(Input.at(end+1))){
+
+            if(Input.at(end+1) == '#')
+                {
+                    AddNode("tok_F", start, end, "F");
+                    currentCol+=1;
+                    return end+1;
+
+                }
+            
+            
+            return -1;};
         AddNode("tok_F", start, end, "F");
         currentCol+=1;
         return end+1;

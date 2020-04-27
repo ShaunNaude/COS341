@@ -15,6 +15,34 @@ private:
 
 int num = 0;
 
+public:
+    SyntaxTree();
+    ~SyntaxTree();
+    int createTree(string); // this initailises root
+    int addNode(int parent , string child , bool map); // note when we add nodes we need to find the parent first then add the child to the childrens list
+    //TODO make function that maps back
+    string mapBack(string old);
+    //TODO make symbol table
+
+    void makeSymbolTable();
+    //TODO write tree to file.
+    void writeToFile();
+
+    //prune tree
+    void prune();
+
+    //remove
+    void remove(int ID ,int index);
+
+    //symbol table node that extends the tree node.
+struct symbolTableNode{
+
+    //here we will add 
+        //scope
+        //type etc...
+        int scope;
+
+};
 
 //this is the tree node
 struct node{
@@ -25,27 +53,12 @@ struct node{
 
     vector< shared_ptr<node> > children; // each node will have a vector of pointers going to their children.
 
+    shared_ptr<symbolTableNode> tableNode;
+
 };
 
     shared_ptr<node> root;
-
-public:
-    SyntaxTree();
-    ~SyntaxTree();
-    int createTree(string); // this initailises root
-    int addNode(int parent , string child , bool map); // note when we add nodes we need to find the parent first then add the child to the childrens list
-    //TODO make function that maps back
-    string mapBack(string old);
-    //TODO make symbol table
-    
-    //TODO write tree to file.
-    void writeToFile();
-
-    //prune tree
-    void prune();
-
-    //remove
-    void remove(int ID ,int index);
+    vector< shared_ptr<symbolTableNode> > symbolTable;
 
 
 };

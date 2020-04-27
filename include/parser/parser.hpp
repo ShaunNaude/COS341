@@ -46,7 +46,7 @@ private:
     void procRule(auto it,int,int,int); 
     void DECLRule(auto it,int,int,int);
     void codeRule(auto it,int,int,int);
-    bool syntaxError = false;
+    
 
 public:
     parser();
@@ -54,5 +54,6 @@ public:
     ~parser();
     void start();
     shared_ptr<SyntaxTree> Tree;
+    bool syntaxError = false;
     
 };

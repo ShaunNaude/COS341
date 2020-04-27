@@ -66,7 +66,7 @@ void parser::start()
     doMapping();
     Parse();
 
-    //TODO: if no syntax errors write tree to file
+  
     if(syntaxError == false)
     {
     Tree->writeToFile();
@@ -967,6 +967,7 @@ void parser::progRule(auto it,int row,int col ,int currentParentID)
     //if --copy == "{"
     //then, we need to find this proc's closing bracket
     //if we dont find any proc_defs on the way we use small rule.
+    //TODO use this code to fix
     if(it != tokenList.begin())
     {
     auto copy = it;
@@ -1111,16 +1112,79 @@ void parser::procRule(auto it,int row,int col ,int currentParentID){
       //use rule 2
       //else
       //use rule 1
-        bool r2 = false;
+
+      //TODO fix
+      /*  bool r2 = false;
+        it++;
       for(it ; it != tokenList.end() ; it++)
       {
           if( (*it)->token_type == "a" )
           {
               r2 =true;
           }
+      }*/
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+    auto copy = it;
+    bool stop = false;
+    int counter = 0;
+    bool found = false;
+    while(stop == false)
+    {
+        copy++;
+
+                if(copy == tokenList.end())
+                {
+                    //use long rule
+                    for(int k = rule2.length() -1 ; k>-1 ; --k)
+                    {
+                    temp.push_back(rule2[k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                    }
+                    return ;
+
+                }
+
+                
+                if((*copy)->token_type == "{")
+                {
+                    counter++;
+                }
+                if((*copy)->token_type == "}")
+                {
+                    if(counter == 0){
+                        stop=true;
+                        
+                    }
+                    else counter--;
+
+                    if(counter == 0)
+                        stop=true;
+                        
+                }
+
+    }
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        if(++copy == tokenList.end())
+    {
+          for(int k = rule1.length() -1 ; k>-1 ; --k)
+        {
+          temp.push_back(rule1[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+        }
+        return;
+
       }
 
-      if(r2 == true)
+      
+       
+      if((*copy)->token_type == "a")
       {
           for(int k = rule2.length() -1 ; k>-1 ; --k)
         {
@@ -1133,7 +1197,7 @@ void parser::procRule(auto it,int row,int col ,int currentParentID){
 
       }
       else{
-          for(int k = rule1.length() -1 ; k>-1 ; --k)
+           for(int k = rule1.length() -1 ; k>-1 ; --k)
         {
           temp.push_back(rule1[k]);
             p.second = Tree->addNode(currentParentID,temp,true);
@@ -1143,6 +1207,7 @@ void parser::procRule(auto it,int row,int col ,int currentParentID){
         }
 
       }
+      
 
 
 }
@@ -1234,7 +1299,7 @@ void  parser::codeRule(auto it,int row,int col ,int currentParentID){
                 return;
                 }
 
-                if((*it)->token_type == "l" || (*it)->token_type == "m" || (*it)->token_type == "t")
+                if((*it)->token_type == "{")
                 {
                     counter++;
                 }
@@ -1243,13 +1308,28 @@ void  parser::codeRule(auto it,int row,int col ,int currentParentID){
                     if(counter == 0)
                         stop=true;
                     else counter--;
+
+                    if(counter == 0)
+                        stop=true;
                         
                 }
 
-                
-
             }
             ++it;
+
+            if(it == tokenList.end())
+            {
+                    temp.push_back(rule1[0]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                    return;
+
+            }
+
+
+
             if((*it)->token_type == ";" && (*++it)->token_type != "a")
             {
                 //use long
@@ -1349,6 +1429,18 @@ void  parser::codeRule(auto it,int row,int col ,int currentParentID){
 
                 }
 
+                if(++it == tokenList.end())
+                {
+                    temp.push_back(rule1[0]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                    return;
+
+                }
+
+                --it;
                 if((*++it)->token_type == ";")
                 {
                 for(int k = rule2.length() -1 ; k>-1 ; --k)
@@ -1374,6 +1466,7 @@ void  parser::codeRule(auto it,int row,int col ,int currentParentID){
 
             }
             else{
+                --it;
                if((*++it)->token_type == ";")
                 {
                 for(int k = rule2.length() -1 ; k>-1 ; --k)
@@ -1415,10 +1508,10 @@ void  parser::codeRule(auto it,int row,int col ,int currentParentID){
         //======================================================================
         
 
-        for(int i = 0;i<8;i++)
+       while(r2 == false)
         {
             it++;
-            string t = (*it)->token_type;
+           
             if(it == tokenList.end())
                 {
                     for(int k = rule1.length() -1 ; k>-1 ; --k)
@@ -1438,7 +1531,7 @@ void  parser::codeRule(auto it,int row,int col ,int currentParentID){
                         copy = it;
                         break;
                     }
-                    if((*it)->token_type == "}")
+                    if((*it)->token_type == "}" || (*it)->token_type == "{")
                     {
                         other = true;
                         break;
@@ -1450,7 +1543,22 @@ void  parser::codeRule(auto it,int row,int col ,int currentParentID){
 
          
 //============================================================================================
-      
+    auto c = copy;
+    c++;
+    if(c == tokenList.end())
+    {
+        for(int k = rule1.length() -1 ; k>-1 ; --k)
+        {
+          temp.push_back(rule1[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+        }
+        return;
+    }
+
+      string test = (*c)->token_type;
 
       if(r2 == true && (*++copy)->token_type != "a" && other == false)
       {

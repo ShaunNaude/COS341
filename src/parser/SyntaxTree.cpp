@@ -242,7 +242,7 @@ string SyntaxTree::mapBack(string old){
     
     string o = "><;()}{=,01";
 
-    if(o.find(old[0]))
+    if(o.find(old[0]) != -1)
     {
         return old;
     }
@@ -291,6 +291,9 @@ void SyntaxTree::writeToFile(){
         
 
     }
+
+    makeSymbolTable();
+    
 }
 
 void SyntaxTree::prune(){
@@ -368,7 +371,7 @@ void SyntaxTree::prune(){
                         //parent   //index of child
 void SyntaxTree::remove(int ID, int index){
 
-     vector<shared_ptr<node>> open;
+    vector<shared_ptr<node>> open;
     open.push_back(root);
     shared_ptr<node> temp;
 
@@ -393,4 +396,27 @@ void SyntaxTree::remove(int ID, int index){
 
 
 }
+}
+
+void SyntaxTree::makeSymbolTable()
+{
+    //traverse through the tree and add a node to tree node that corresponds to the symbol table
+     vector<shared_ptr<node>> open;
+    open.push_back(root);
+    shared_ptr<node> temp;
+
+    while(open.empty() == false)
+    {
+        temp = open.back();
+        open.pop_back();
+
+        temp->tableNode = make_shared<symbolTableNode>();
+        symbolTable.push_back(temp->tableNode);
+
+        for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+        {
+            open.push_back(*(it));
+
+        }
+    }
 }
