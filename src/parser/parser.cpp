@@ -47,15 +47,9 @@ void parser::start()
     for(int i=0; i<listNT.size(); i++){        
         follow(listNT[i]);
     }
-    cout<<"First: "<<endl;
-    for(int i=0;i<listNT.size();i++){
-        MyDisp = listNT[i];
-        cout<<MyDisp->type<<":";
-        for(int j=0;j<MyDisp->firstSet.size();j++)
-            cout<<listNT[i]->firstSet.at(j)<<"|";
-        cout<<endl;
-    }
-    cout<<"Follow: "<<endl;
+   
+   
+    
     /*for(int i=0;i<listNT.size();i++){
         MyDisp = listNT[i];
         cout<<MyDisp->type<<":";
