@@ -8,6 +8,7 @@
 #include <cctype>
 #include <fstream>
 #include<parser/SyntaxTree.hpp>
+#include <algorithm>
 
 class parser {
 
@@ -41,6 +42,11 @@ private:
     void doMapping(); // this will modify the tokenList to have our new mappings
 
     void Parse();
+    void progRule(auto it,int,int,int);
+    void procRule(auto it,int,int,int); 
+    void DECLRule(auto it,int,int,int);
+    void codeRule(auto it,int,int,int);
+    bool syntaxError = false;
 
 public:
     parser();

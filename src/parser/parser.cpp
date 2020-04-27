@@ -72,6 +72,14 @@ void parser::start()
     doMapping();
     Parse();
 
+    //TODO: if no syntax errors write tree to file
+    if(syntaxError == false)
+    {
+    Tree->writeToFile();
+    }
+    else{
+        cout<<"Syntax errors found, could not create AST"<<endl;
+    }
 
 }
 
@@ -369,22 +377,22 @@ void parser::addGrammar(){
     ASSIGN->Productions.push_back("N=f%");//VAR=stringLiteral
     ASSIGN->Productions.push_back("N=N%");//VAR=VAR
     ASSIGN->Productions.push_back("N=O%");//VAR=NUMEXPR
-    ASSIGN->Productions.push_back("N=R%");//VAR=BOOL
+    ASSIGN->Productions.push_back("N=Q%");//VAR=BOOL
     //add to list
     listNT.push_back(ASSIGN);
 
     //COND_BRANCH
     shared_ptr<nonTerminal> COND_BRANCH = make_shared<nonTerminal>();
     COND_BRANCH->type = "J";
-    COND_BRANCH->Productions.push_back("k(R)l{D}%");//if(BOOL)then{CODE}
-    COND_BRANCH->Productions.push_back("k(R)l{D}m{D}%");//if(BOOL)then{CODE}else{CODE}
+    COND_BRANCH->Productions.push_back("k(Q)l{D}%");//if(BOOL)then{CODE}
+    COND_BRANCH->Productions.push_back("k(Q)l{D}m{D}%");//if(BOOL)then{CODE}else{CODE}
     //add to list
     listNT.push_back(COND_BRANCH);
 
     //COND_LOOP
     shared_ptr<nonTerminal> COND_LOOP = make_shared<nonTerminal>();
     COND_LOOP->type = "K";
-    COND_LOOP->Productions.push_back("t(R){D}%");//while(BOOL){CODE}
+    COND_LOOP->Productions.push_back("t(Q){D}%");//while(BOOL){CODE}
     COND_LOOP->Productions.push_back("u(N=0;N<N;N=h(N,1)){D}%");//for(VAR=0;VAR<VAR;VAR=add(VAR,1)){CODE}
     //add to list
     listNT.push_back(COND_LOOP);
@@ -436,9 +444,9 @@ void parser::addGrammar(){
     BOOL->Productions.push_back("n(N,N)%");//eq(VAR,VAR)
     BOOL->Productions.push_back("(N<N)%");//(VAR<VAR)
     BOOL->Productions.push_back("(N>N)%");//(VAR>VAR)
-    BOOL->Productions.push_back("oR%");//not BOOL
-    BOOL->Productions.push_back("p(R,R)%");//and(BOOL,BOOL)
-    BOOL->Productions.push_back("q(R,R)%");//or(BOOL,BOOL)
+    BOOL->Productions.push_back("oQ%");//not BOOL
+    BOOL->Productions.push_back("p(Q,Q)%");//and(BOOL,BOOL)
+    BOOL->Productions.push_back("q(Q,Q)%");//or(BOOL,BOOL)
     BOOL->Productions.push_back("r%");//T
     BOOL->Productions.push_back("s%");//F
     BOOL->Productions.push_back("N%");//VAR
@@ -574,7 +582,7 @@ void parser::doMapping()
     for(auto it = tokenList.begin() ; it != tokenList.end() ; it++ )
     {
         //makes our tokenList contain the new mapping.
-        (*it)->token_str = map((*it)->token_type);    
+        (*it)->token_type = map((*it)->token_type);    
     }
 
     
@@ -588,7 +596,7 @@ void parser::Parse()
     auto it = tokenList.begin();
 
     //fuck i need to make the stack store pairs, string,int the int will be its parents ID
-    //TODO
+   
     p.first = "$";
     p.second = -1;
     stack.push_back(p); // initail item on the stack.
@@ -602,6 +610,11 @@ void parser::Parse()
         //this loop goes through all tokens
     while(it != tokenList.end())
     {
+        if(syntaxError == true)
+        {
+            cout<<"Syntax errors found could not continue parsing, Please fix errors"<<endl;
+            break;
+        }
         top = stack[stack.size() - 1 ].first;
         currentParentID = stack[stack.size() - 1 ].second;
         stack.pop_back();
@@ -614,18 +627,20 @@ void parser::Parse()
 //================if we have a terminal===========================================
         if( !isupper(top[0]) )
         {
-            if( top == (*it)->token_str )
+            if( top == (*it)->token_type || ( top == "0" && (*it)->token_type == "g") || ( top == "1" && (*it)->token_type == "g") )
                 {
                     //terminal match
-                    Tree->addNode(currentParentID,top);
+                    Tree->addNode(currentParentID,(*it)->token_str,false);
                     it++;
                     continue;
                 }
             else
             {
-                cout<<(*it)->token_str<<endl;
-                //terminal does not match.
-                //display error
+                
+                cout<<"syntax error: "<<"[line: "<<(*it)->MyLine<<" col: "<<(*it)->MyCol<<"] " << "Expected: "<<top<<" , but found: "<<(*it)->token_type<<endl;
+                it++;
+                syntaxError = true;
+                
             }
             
                 
@@ -636,7 +651,7 @@ void parser::Parse()
         //parsetable[35][20]
        for(int i = 0 ; i<35 ; i++)
        {
-           if(ParseTable[i][0] == (*it)->token_str )
+           if(ParseTable[i][0] == (*it)->token_type )
            {
                row = i;
            }
@@ -652,57 +667,275 @@ void parser::Parse()
            }
        }
 
-        
 
+//===============if statements ====================================================
 
+    if(ParseTable[0][col] == "A")
+    {
+        progRule(it,row,col,currentParentID);
+        continue;
+    }
 
+    if(ParseTable[0][col] == "B")
+    {
+        procRule(it,row,col,currentParentID);
+        continue;
+    }
 
+    if(ParseTable[0][col] == "F")
+    {
+        DECLRule(it,row,col,currentParentID);
+        continue;
+    }
 
-//==========not a conditional======================================================
+    if(ParseTable[0][col] == "D")
+    {
+        codeRule(it,row,col,currentParentID);
+        continue;
+    }
 
+//=========================================================================================
+
+    //if i have more than one rule , i need to determine which rule to use.
             
-       string rules = ParseTable[row][col];
+        //first need to split all rules into vector<string> 
+        string ruleList = ParseTable[row][col];
+        vector<string> rules;
+        string temp;
+        auto copy = it;
 
-      string rule1 = rules.substr(0,rules.find_first_of('%'));
-      int k = rules.find_first_of('%')+1;
-      string rule2 = rules.substr(k,rules.find_last_of('%') - k);
+            int n = count(ruleList.begin(), ruleList.end(), '%');
 
-      //put longest rule onto stack
-      string temp;
+            if(n>=2)
+            {
+                for(int i=0 ; i<n ; i++)
+                {
+                rules.push_back( ruleList.substr(0,ruleList.find_first_of('%')) );
+                ruleList.erase(0,ruleList.find_first_of('%')+1);
 
-      if(rule1.length() > rule2.length())
-      {
-          for(int k = rule1.length() -1 ; k>-1 ; --k)
-          {
-            temp.push_back(rule1[k]);
-            p.second = Tree->addNode(currentParentID,temp);
+                }
+
+                //test if we have assign or call
+                
+                if(rules[0] == "H")
+                {
+                    if( (*++copy)->token_type == "=" )
+                    {
+                        //rule 2
+                        p.second = Tree->addNode(currentParentID,rules[1],true);
+                        p.first = rules[1];
+                        stack.push_back(p);
+                        continue;
+
+                    }
+
+                    else{
+                        
+                        p.second = Tree->addNode(currentParentID,rules[0],true);
+                        p.first = rules[0];
+                        stack.push_back(p);
+                        temp="";
+                        continue;
+
+                    }
+                }
+
+                //test what type of assign we have
+                ++copy;
+                ++copy;
+                string test = (*copy)->token_type;
+                if(rules[0] == "N=f")
+                {
+                    if( (*copy)->token_type == "f")
+                    {
+                        //rule 0
+                       for(int k = 2 ; k>-1 ; --k)
+                         {
+                             temp.push_back(rules[0][k]);
+                             p.second = Tree->addNode(currentParentID,temp,true);
+                             p.first = temp;
+                             stack.push_back(p);
+                             temp="";
+                            }
+                            continue;
+                    }
+                    if((*copy)->token_type == "b")
+                    {
+                         //rule 1
+                       for(int k = 2 ; k>-1 ; --k)
+                         {
+                             temp.push_back(rules[1][k]);
+                             p.second = Tree->addNode(currentParentID,temp,true);
+                             p.first = temp;
+                             stack.push_back(p);
+                             temp="";
+                            }
+                            continue;
+                    }
+                      if((*copy)->token_type == "g" || (*copy)->token_type == "h" || (*copy)->token_type == "i" || (*copy)->token_type == "j" )
+                    {
+                        //rule 2
+                       for(int k = 2 ; k>-1 ; --k)
+                         {
+                             temp.push_back(rules[2][k]);
+                             p.second = Tree->addNode(currentParentID,temp,true);
+                             p.first = temp;
+                             stack.push_back(p);
+                             temp="";
+                            }
+                            continue;
+                    }
+                      if((*copy)->token_type == "n" || (*copy)->token_type == "(" || (*copy)->token_type == "p" || (*copy)->token_type == "q" || (*copy)->token_type == "o" || (*copy)->token_type == "r" || (*copy)->token_type == "s")
+                    {
+                        //rule 3
+                        for(int k = 2 ; k>-1 ; --k)
+                         {
+                             temp.push_back(rules[3][k]);
+                             p.second = Tree->addNode(currentParentID,temp,true);
+                             p.first = temp;
+                             stack.push_back(p);
+                             temp="";
+                            }
+                            continue;
+                    }
+
+
+
+                    //log error
+                   
+                cout<<"syntax error: "<<"[line: "<<(*it)->MyLine<<" col: "<<(*it)->MyCol<<"] Assignment statement incorrect"<<endl;
+                it++;
+                syntaxError = true;
+                continue;
+
+
+                }
+
+                
+               
+
+                if(rules[0][0] == 'k')
+                {
+                     auto copy = it;
+                     int counter=0;
+                     bool stop = false;
+
+                    while(stop == false)
+                    {
+                    copy++;
+
+                    if(copy == tokenList.end())
+                     {
+                            for(int k = rules[1].length() -1 ; k>-1 ; --k)
+                {
+                    temp.push_back(rules[1][k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                }
+                continue;
+                        }
+
+                        if((*copy)->token_type == "{")
+                        {
+                            counter++;
+                        }
+
+                if((*copy)->token_type == "}")
+                    {
+                        counter--;
+                        if(counter==0)
+                            {
+                                stop = true;
+                            }
+                    }
+                }
+
+                if((*++copy)->token_type == "m")
+                {
+                      for(int k = rules[1].length() -1 ; k>-1 ; --k)
+                {
+                    temp.push_back(rules[1][k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                }
+                continue;
+                }
+                else{
+
+                    for(int k = rules[0].length() -1 ; k>-1 ; --k)
+                {
+                    temp.push_back(rules[0][k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                }
+                continue;
+
+            }
+
+
+
+                }
+
+                copy = it;
+                //test case where we have N<N || N>N
+                if(rules[0] == "(N<N)")
+                {
+                    copy++;
+                    copy++;
+                  if((*copy)->token_type == "<")
+                  {
+                      for(int k = rules[0].length() -1 ; k>-1 ; --k)
+                    {
+                    temp.push_back(rules[0][k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                    }
+                continue;
+
+                  }
+                  else{
+                       for(int k = rules[1].length() -1 ; k>-1 ; --k)
+                    {
+                    temp.push_back(rules[1][k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                    }
+                continue;
+
+                  }
+                    
+                }
+
+
+
+
+            }
+        else{
+            for(int i = ruleList.length() -2 ; i>-1 ; i--)
+            {
+            temp.push_back(ruleList[i]);
+            p.second = Tree->addNode(currentParentID,temp,true);
             p.first = temp;
             stack.push_back(p);
             temp="";
-          }
+            }
+        }
+            
+            //if there is more than 1 rule 
+                //check which function to use 
+                //in choosen function decide which rule to use.
+                //continue
 
-      }
-    else{
-        for(int k = rule2.length() - 1 ; k>-1 ; --k)
-          {
-            temp.push_back(rule2[k]);
-            p.second = Tree->addNode(currentParentID,temp);
-            p.first = temp;
-            stack.push_back(p);
-            temp="";
-          }
-
-    }
-
-      
-        
-
-
-    
-//===========code to handle conditionals==============================
-    else{
-        //here we put the code to handle conditions
-    }
     }
         
 
@@ -715,3 +948,540 @@ void parser::Parse()
 
 
 }
+
+void parser::progRule(auto it,int row,int col ,int currentParentID)
+{   
+    
+    //in this function i need to decide which PROG rule to use.
+    pair<string,int> p;
+    string rules = ParseTable[row][col];
+
+      string rule1 = rules.substr(0,rules.find_first_of('%'));
+      int k = rules.find_first_of('%')+1;
+      string rule2 = rules.substr(k,rules.find_last_of('%') - k);
+
+      if(rules == "")
+      {
+          cout<<"syntax error: "<<"[line: "<<(*it)->MyLine<<" col: "<<(*it)->MyCol<<"] Expected INSTR but found: "<<(*it)->token_type<<endl;
+          syntaxError = true;
+      }
+
+      //put rule onto stack
+      string temp;
+    //===================THIS is the case when prog is called within a proc=========================
+    
+    //if --copy == "{"
+    //then, we need to find this proc's closing bracket
+    //if we dont find any proc_defs on the way we use small rule.
+    if(it != tokenList.begin())
+    {
+    auto copy = it;
+    if((*--copy)->token_type == "{")
+    {
+    ++copy;
+    bool stop = false;
+    int counter = 0;
+    bool found = false;
+    while(stop == false)
+    {
+        copy++;
+
+                if(copy == tokenList.end())
+                {
+                    //use long rule
+                    for(int k = rule2.length() -1 ; k>-1 ; --k)
+          {
+            temp.push_back(rule2[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+          return ;
+
+                }
+
+                if((*copy)->token_type == "a")
+                {
+                    found = true;
+                }
+
+                if((*copy)->token_type == "{")
+                {
+                    counter++;
+                }
+                if((*copy)->token_type == "}")
+                {
+                    if(counter == 0)
+                        stop=true;
+                    else counter--;
+                        
+                }
+
+    }
+
+    if(found == true)
+    {
+        for(int k = rule2.length() -1 ; k>-1 ; --k)
+          {
+            temp.push_back(rule2[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+          return ;
+
+    }
+    else{
+        for(int k = rule1.length() -1 ; k>-1 ; --k)
+          {
+          temp.push_back(rule1[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+          return ;
+
+
+    }
+
+
+
+    }
+}
+
+
+
+    //============================================================================================= 
+      //===========THIS is case when regular prog is called====================
+        bool r2 = false;
+      for(it ; it != tokenList.end() ; it++)
+      {
+          if( (*it)->token_type == "a" )
+          {
+              r2 =true;
+          }
+      }
+
+      if(r2 == true)
+      {
+          for(int k = rule2.length() -1 ; k>-1 ; --k)
+          {
+            temp.push_back(rule2[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+
+      }
+      else{
+          for(int k = rule1.length() -1 ; k>-1 ; --k)
+          {
+          temp.push_back(rule1[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+
+      }
+      //=======================================================================
+
+    }
+
+void parser::procRule(auto it,int row,int col ,int currentParentID){
+
+     //in this function i need to decide which proc rule to use.
+    pair<string,int> p;
+    string rules = ParseTable[row][col];
+
+      string rule1 = rules.substr(0,rules.find_first_of('%'));
+      int k = rules.find_first_of('%')+1;
+      string rule2 = rules.substr(k,rules.find_last_of('%') - k);
+
+      //put rule onto stack
+      string temp;
+
+      if(rules == "")
+      {
+          cout<<"syntax error: "<<"[line: "<<(*it)->MyLine<<" col: "<<(*it)->MyCol<<"] Expected proc but found: "<<(*it)->token_type<<endl;
+          syntaxError = true;
+          return;
+      }
+        
+      //put for loop from it till tokens.end()
+      // if any it->tokens_str = proc
+      //use rule 2
+      //else
+      //use rule 1
+        bool r2 = false;
+      for(it ; it != tokenList.end() ; it++)
+      {
+          if( (*it)->token_type == "a" )
+          {
+              r2 =true;
+          }
+      }
+
+      if(r2 == true)
+      {
+          for(int k = rule2.length() -1 ; k>-1 ; --k)
+        {
+            temp.push_back(rule2[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+        }
+
+      }
+      else{
+          for(int k = rule1.length() -1 ; k>-1 ; --k)
+        {
+          temp.push_back(rule1[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+        }
+
+      }
+
+
+}
+
+
+
+void parser::DECLRule(auto it,int row,int col ,int currentParentID){
+
+    //in this function i need to decide which DECL rule to use.
+    pair<string,int> p;
+    string rules = ParseTable[row][col];
+
+      string rule1 = rules.substr(0,rules.find_first_of('%'));
+      int k = rules.find_first_of('%')+1;
+      string rule2 = rules.substr(k,rules.find_last_of('%') - k);
+
+      //put rule onto stack
+      string temp;
+
+    //here i need to decide which DECL rule to use.
+
+    it++;
+    it++;
+    it++;
+    // if i can find a DECL keyword in next statement then use long rule.
+    string check = (*it)->token_type;
+    if((*it)->token_type == "v" || (*it)->token_type == "w" || (*it)->token_type == "x" )
+    {
+        for(int k = rule2.length() -1 ; k>-1 ; --k)
+        {
+            temp.push_back(rule2[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+
+    }
+    else{
+        for(int k = rule1.length() -1 ; k>-1 ; --k)
+        {
+            temp.push_back(rule1[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+          }
+
+    }
+
+
+}
+
+void  parser::codeRule(auto it,int row,int col ,int currentParentID){
+     //in this function i need to decide which code rule to use.
+    pair<string,int> p;
+    string rules = ParseTable[row][col];
+
+      string rule1 = rules.substr(0,rules.find_first_of('%'));
+      int k = rules.find_first_of('%')+1;
+      string rule2 = rules.substr(k,rules.find_last_of('%') - k);
+      
+      //put rule onto stack
+      string temp;
+
+
+    //here i need to decide which instr rule to use
+      
+    int counter = 0;
+    bool stop = false;
+
+       if((*it)->token_type == "t" || (*it)->token_type == "u" )
+        {
+            while(stop == false)
+            {
+                it++;
+
+                if(it == tokenList.end())
+                {
+                    //use long rule
+                    for(int k = rule2.length() -1 ; k>-1 ; --k)
+                {
+                    temp.push_back(rule2[k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                }
+                return;
+                }
+
+                if((*it)->token_type == "l" || (*it)->token_type == "m" || (*it)->token_type == "t")
+                {
+                    counter++;
+                }
+                if((*it)->token_type == "}")
+                {
+                    if(counter == 0)
+                        stop=true;
+                    else counter--;
+                        
+                }
+
+                
+
+            }
+            ++it;
+            if((*it)->token_type == ";" && (*++it)->token_type != "a")
+            {
+                //use long
+               for(int k = rule2.length() -1 ; k>-1 ; --k)
+                {
+                    temp.push_back(rule2[k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                }
+                return;
+            }
+            else{
+                    temp.push_back(rule1[0]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                    return;
+            }
+        
+
+
+
+        }
+       
+        //okay here i need to determine where the if statement ends
+            //then check if theres a semi colon and next is not proc
+            
+     if((*it)->token_type == "k")
+        {
+
+            //first determine if the statement we working with has an else statement
+            while(stop == false)
+            {
+                it++;
+
+                if(it == tokenList.end())
+                {
+                    //use long rule
+                }
+
+                if((*it)->token_type == "{")
+                {
+                    counter++;
+                }
+
+                if((*it)->token_type == "}")
+                {
+                    counter--;
+                    if(counter==0)
+                    {
+                        stop = true;
+                    }
+                }
+
+            }
+
+
+            stop = false;
+            counter=0;
+            if((*++it)->token_type == "m")
+            {
+                //find the end of else
+                while(stop == false)
+                {
+                    it++;
+
+                if(it == tokenList.end())
+                {
+                    //use long rule
+                     for(int k = rule2.length() -1 ; k>-1 ; --k)
+                {
+                    temp.push_back(rule2[k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                }
+                return;
+                }
+
+                if((*it)->token_type == "{")
+                {
+                    counter++;
+                }
+
+                if((*it)->token_type == "}")
+                {
+                    counter--;
+                    if(counter==0)
+                    {
+                        stop = true;
+                    }
+                }
+
+                }
+
+                if((*++it)->token_type == ";")
+                {
+                for(int k = rule2.length() -1 ; k>-1 ; --k)
+                {
+                    temp.push_back(rule2[k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                }
+                return;
+                }
+            else{
+
+                    temp.push_back(rule1[0]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                    return;
+            }
+            
+
+            }
+            else{
+               if((*++it)->token_type == ";")
+                {
+                for(int k = rule2.length() -1 ; k>-1 ; --k)
+                {
+                    temp.push_back(rule2[k]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                }
+                return;
+                }
+            else{
+
+                    temp.push_back(rule1[0]);
+                    p.second = Tree->addNode(currentParentID,temp,true);
+                    p.first = temp;
+                    stack.push_back(p);
+                    temp="";
+                    return;
+            }
+            
+            }
+            
+        }
+
+
+
+
+
+        //other just look for semi colon then u know there is another statement coming
+//===================================================================================================
+        string Z = ";";
+        bool r2 = false;
+        auto copy = it;
+        bool other = false;
+        
+
+        //======================================================================
+        
+
+        for(int i = 0;i<8;i++)
+        {
+            it++;
+            string t = (*it)->token_type;
+            if(it == tokenList.end())
+                {
+                    for(int k = rule1.length() -1 ; k>-1 ; --k)
+                    {
+                        temp.push_back(rule1[k]);
+                        p.second = Tree->addNode(currentParentID,temp,true);
+                        p.first = temp;
+                        stack.push_back(p);
+                        temp="";
+                    }
+                    return;
+                }
+
+                if( (*it)->token_type == ";" )
+                    {
+                        r2 =true;
+                        copy = it;
+                        break;
+                    }
+                    if((*it)->token_type == "}")
+                    {
+                        other = true;
+                        break;
+                    }
+
+
+
+        }
+
+         
+//============================================================================================
+      
+
+      if(r2 == true && (*++copy)->token_type != "a" && other == false)
+      {
+          for(int k = rule2.length() -1 ; k>-1 ; --k)
+        {
+            temp.push_back(rule2[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+        }
+
+      }
+      else{
+          for(int k = rule1.length() -1 ; k>-1 ; --k)
+        {
+          temp.push_back(rule1[k]);
+            p.second = Tree->addNode(currentParentID,temp,true);
+            p.first = temp;
+            stack.push_back(p);
+            temp="";
+        }
+
+      }
+
+}
+
+

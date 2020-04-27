@@ -1,41 +1,20 @@
-num zero;#
-zero = 0;#
+num factorialresult;#
+num factorialn;#
 
-num rax;#
-num rbx;#
-num rcx;#
+factorialn = 7;#
+factorial;#
 
-rax = 0;#
-rbx = 0;#
-rcx = 0;#
+output(factorialresult);#
 
-while (T) {#
-  input(rbx);#
-  input(rcx);#
-  gcd;#
-  output(rax)#
-};#
-
-proc mod {#
-  if (eq(rbx, rcx)) then {#
-    rax = 0#
-  } else {#
-    rax = rbx;#
-    while ((rbx > zero)) {#
-      rax = rbx;#
-      rbx = sub(rbx, rcx)#
-    };#
-    if (eq(rbx, zero)) then {#
-      rax = 0#
-    }#
+proc factorial {#
+  num i;#
+  num j;#
+  j = factorialn;#
+  factorialresult = j;#
+  factorialn = sub(factorialn, 1);#
+  
+  for (i = 0; i < factorialn; i = add(i, 1)) {#
+    j = sub(j, 1);#
+    factorialresult = mult(factorialresult, j)#
   }#
-}#
-
-proc gcd {#
-  while (not eq(rcx, zero)) {#
-    mod;#
-    rbx = rcx;#
-    rcx = rax#
-  };#
-  rax = rbx#
 }#

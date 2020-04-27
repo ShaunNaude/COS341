@@ -82,7 +82,7 @@ void lexer::start(string Input){
                 }
             }
             //space
-            if( (Tokenized == false)&&( result.at(pos) == ' ' )){ 
+            if( (Tokenized == false)&&( result.at(pos) == ' '|| result.at(pos) == '\t'  )){ 
                 currentCol++;        
                 pos++;                      
                 continue;
@@ -307,7 +307,17 @@ int lexer::isKeyword(string Input, int start){//this function will check for val
     }else if(Input.at(end) == 'h'){
         if ((Input.at(end+1)== 'a')&&(Input.at(end+2)== 'l')&&(Input.at(end+3)== 't')){
             end = end + 3;
-            if(!OperatorNext(Input.at(end+1))){return -1;};
+            if(!OperatorNext(Input.at(end+1))){
+
+                if(Input.at(end+1) == '#')
+                {
+                    AddNode("tok_halt", start, end, "halt");
+                    currentCol+=4;
+                    return end+1;
+
+                }
+
+                return -1;};
             AddNode("tok_halt", start, end, "halt");
             currentCol+=4;
             return end+1;
@@ -493,7 +503,7 @@ int lexer::isInt(string Input, int start){//this function will add nodes to  Lin
             MyInt += Input.at(end);
             end++;
         }
-        if((MyInt == "-")||(MyInt[1]=='0')){
+        if((MyInt == "-")||(MyInt[0]=='0')){
             logError("Lexical Error [line: "+to_string(currentLine)+", col: "+to_string(currentCol)+"]: "+MyInt+" is not a valid integer");
             return -1;
         }
@@ -555,6 +565,7 @@ bool lexer::isValid(char MyChar){//this function will true if mychar = REGEX = [
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void lexer::logError(string error){//this will cout the error
     cout<<error<<endl;
+    lexError = true;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void lexer::writeTokens(){

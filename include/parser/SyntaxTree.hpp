@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 class SyntaxTree {
@@ -32,5 +33,19 @@ public:
     SyntaxTree();
     ~SyntaxTree();
     int createTree(string); // this initailises root
-    int addNode(int parent , string child); // note when we add nodes we need to find the parent first then add the child to the childrens list
+    int addNode(int parent , string child , bool map); // note when we add nodes we need to find the parent first then add the child to the childrens list
+    //TODO make function that maps back
+    string mapBack(string old);
+    //TODO make symbol table
+    
+    //TODO write tree to file.
+    void writeToFile();
+
+    //prune tree
+    void prune();
+
+    //remove
+    void remove(int ID ,int index);
+
+
 };

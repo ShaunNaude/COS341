@@ -12,6 +12,7 @@ class lexer {
 public:
 //=========================Variables============================
     list<shared_ptr <token> > tokenList;
+    bool lexError=false;
 //==============================================================
 
 //=========================Functions============================
@@ -37,5 +38,6 @@ private:
     //Global varibales
     int currentLine = 1;
     int currentCol = 1;
+    
     
 };

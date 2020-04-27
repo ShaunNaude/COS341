@@ -58,6 +58,12 @@ int main() {
     //get tokens from lexer
     list<shared_ptr <token> > tokenList = lex->tokenList;
 
+    if(lex->lexError == true)
+    {
+        cout<<"cannot begin parsing, please fix lexical errors"<<endl;
+        return 0;
+    }
+
    // create parser;
     shared_ptr<parser> par = make_shared<parser>(tokenList);
     par->start();
