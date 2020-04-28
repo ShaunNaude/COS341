@@ -1,0 +1,12 @@
+                    scoping plan
+     =============================================================================
+     
+                                 name
+    -> we have a vector< vector<string> >
+    -> we have a loop going from 0 -> scope
+    -> in this loop we need to fill the vector with each varible that has been declared in each scope
+        -> if we have a varible with the same name display an error.
+    -> thus v[0] will contain a vector of strings for each variable/proc decalred in that scope.
+
+    ->once we have this we will once again traverse the tree and rename all our procedures and varibles appropriatly V0,P0
+    ->we will also check if where they are being called is allowed, if not then we must make it undefined.

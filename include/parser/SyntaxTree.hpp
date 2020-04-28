@@ -41,6 +41,8 @@ struct symbolTableNode{
         //scope
         //type etc...
         int scope;
+        string varibleID;
+        string type;
 
 };
 

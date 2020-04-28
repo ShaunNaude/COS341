@@ -1,13 +1,21 @@
-num a;#
-input(a);#
-num c;#
-num i;#
-c = 5;#
-for (i = 0; i < a; i = add(i, 1)) {#
-c = 11#
-};#
-output(c);#
-g;#
-proc g {#
-output(a)#
-}#
+num app;#
+app= 100;#
+num car;#
+car= 300;#
+proc alpha {#
+    app= 110;#
+    num bat;#
+    bat= 210;#
+    proc kappa {#
+        num app;#
+        app= 111#
+        }#
+        proc epsilon {#
+            bat= 212;#
+            car= 312#
+            }#
+            }#
+            proc beta #
+            {app= 120;#
+            bat= 220#
+            }#
