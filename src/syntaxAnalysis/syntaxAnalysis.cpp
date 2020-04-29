@@ -25,22 +25,27 @@ void syntaxAnalysis::scopeNodes(){
     while(open.empty() == false)
     {
         temp = open.back();
-        open.pop_back();
+       open.pop_back();
+      // temp = open.front();
+      // open.erase(open.begin());
+
+       
+        temp->tableNode->scope = scope;
 
         if(temp->name == "proc")
             ++scope;
+        
 
-        temp->tableNode->scope = scope;
-
-        for(auto it = temp->children.begin(); it != temp->children.end(); it++)
-                open.push_back((*it));
+        for(int it = temp->children.size()-1; it > -1; it--)
+                //open.insert(open.begin() , (*it) );
+                open.push_back(temp->children[it]);
 
 
     }
 
     rename(scope);
 
-    //debugPrint();
+    debugPrint();
 
     
 
