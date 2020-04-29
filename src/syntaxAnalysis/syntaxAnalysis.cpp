@@ -26,8 +26,7 @@ void syntaxAnalysis::scopeNodes(){
     {
         temp = open.back();
        open.pop_back();
-      // temp = open.front();
-      // open.erase(open.begin());
+      
 
        
         temp->tableNode->scope = scope;
@@ -37,7 +36,6 @@ void syntaxAnalysis::scopeNodes(){
         
 
         for(int it = temp->children.size()-1; it > -1; it--)
-                //open.insert(open.begin() , (*it) );
                 open.push_back(temp->children[it]);
 
 
@@ -60,7 +58,7 @@ void syntaxAnalysis::scopeNodes(){
      bool stop=false;
      int num = 0;
 
-     for(int i = 0 ; i<5 ; i++)
+     for(int i = 0  ; i<scopeNum+1 ; i++)
      {
 
          vector< shared_ptr<SyntaxTree::node> > open;
@@ -73,8 +71,10 @@ void syntaxAnalysis::scopeNodes(){
             temp = open.back();
             open.pop_back();
 
-            if(temp->tableNode->scope == i  && temp->name == "DECL" )
+            if(temp->tableNode->scope == i )
                 {   
+                    if(temp->name == "DECL")
+                    {
                     if(temp->children[0]->name == "DECL")
                         num++;
                     //name
@@ -91,19 +91,20 @@ void syntaxAnalysis::scopeNodes(){
                     tempList.push_back(p);
 
                     num=0;
+                    }
 
                 }
 
-                if(temp->tableNode->scope > i)
-                {
-                    if(tempList.size() != 0)
-                    declarations.push_back(tempList);
+               // if(temp->tableNode->scope > i)
+               // {
+                   //if(tempList.size() != 0)
+                    //declarations.push_back(tempList);
 
-                    tempList.clear();
-                    stop = true;
-                    open.clear();
-                    continue;
-                }
+                    //tempList.clear();
+                    //stop = true;
+                    //open.clear();
+                   // continue;
+               // }
 
             
 
@@ -111,6 +112,9 @@ void syntaxAnalysis::scopeNodes(){
                 open.push_back((*it));
 
         }//end while loop
+
+        declarations.push_back(tempList);
+        tempList.clear();
 
 
      }//end for loop

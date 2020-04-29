@@ -1,5 +1,6 @@
 num app;#
 app= 100;#
+string app;#
 num car;#
 car= 300;#
 proc alpha {#
