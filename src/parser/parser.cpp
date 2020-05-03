@@ -967,7 +967,7 @@ void parser::progRule(auto it,int row,int col ,int currentParentID)
     //if --copy == "{"
     //then, we need to find this proc's closing bracket
     //if we dont find any proc_defs on the way we use small rule.
-    //TODO use this code to fix
+   
     if(it != tokenList.begin())
     {
     auto copy = it;
@@ -1113,7 +1113,7 @@ void parser::procRule(auto it,int row,int col ,int currentParentID){
       //else
       //use rule 1
 
-      //TODO fix
+      
       /*  bool r2 = false;
         it++;
       for(it ; it != tokenList.end() ; it++)

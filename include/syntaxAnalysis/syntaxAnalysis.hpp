@@ -24,10 +24,13 @@ class syntaxAnalysis {
     void scopeNodes();
     void rename(int);
     void errorCheck(vector< vector< pair<string,string>  > >);
+    void renameProcedures(int);
 
 
 
-
+    //helper functions
+    void topLevel(vector< vector<string> >&);
+    void otherProcedures(vector< vector<string> >&);
 
     //debug function
     void debugPrint();

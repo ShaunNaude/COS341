@@ -26,18 +26,16 @@ void syntaxAnalysis::scopeNodes(){
     {
         temp = open.back();
        open.pop_back();
-      // temp = open.front();
-      // open.erase(open.begin());
+      
 
        
-        temp->tableNode->scope = scope;
+       // temp->tableNode->scope = scope;
 
         if(temp->name == "proc")
             ++scope;
-        
+        temp->tableNode->scope = scope;
 
         for(int it = temp->children.size()-1; it > -1; it--)
-                //open.insert(open.begin() , (*it) );
                 open.push_back(temp->children[it]);
 
 
@@ -60,7 +58,7 @@ void syntaxAnalysis::scopeNodes(){
      bool stop=false;
      int num = 0;
 
-     for(int i = 0 ; i<5 ; i++)
+     for(int i = 0  ; i<scopeNum+1 ; i++)
      {
 
          vector< shared_ptr<SyntaxTree::node> > open;
@@ -73,8 +71,10 @@ void syntaxAnalysis::scopeNodes(){
             temp = open.back();
             open.pop_back();
 
-            if(temp->tableNode->scope == i  && temp->name == "DECL" )
+            if(temp->tableNode->scope == i )
                 {   
+                    if(temp->name == "DECL")
+                    {
                     if(temp->children[0]->name == "DECL")
                         num++;
                     //name
@@ -91,26 +91,19 @@ void syntaxAnalysis::scopeNodes(){
                     tempList.push_back(p);
 
                     num=0;
+                    }
 
                 }
 
-                if(temp->tableNode->scope > i)
-                {
-                    if(tempList.size() != 0)
-                    declarations.push_back(tempList);
-
-                    tempList.clear();
-                    stop = true;
-                    open.clear();
-                    continue;
-                }
-
-            
+               
 
             for(auto it = temp->children.begin(); it != temp->children.end(); it++)
                 open.push_back((*it));
 
         }//end while loop
+
+        declarations.push_back(tempList);
+        tempList.clear();
 
 
      }//end for loop
@@ -125,11 +118,159 @@ void syntaxAnalysis::scopeNodes(){
         }
 
         //
+        renameProcedures(scopeNum);
 
-
+        
  }
 
+void syntaxAnalysis::renameProcedures(int scopeNum){
 
+    vector< vector<string> > pScopes;
+    pScopes.resize(scopeNum+1);
+
+    for(int i = 0 ; i<2 ;i++ )
+    {
+        if( i == 0 )
+        {
+            //do top code.
+            topLevel(pScopes);
+        }
+
+        if(i == 1 )
+        {
+            //do everything else
+            otherProcedures(pScopes);
+
+        }
+
+
+    }
+    //TODO: errorcheckP
+    //make a function to check if we have duplicate proceudures in same scope.
+
+
+
+    //TODO: rename procedures
+
+    
+
+}
+
+void syntaxAnalysis::otherProcedures(vector< vector<string> > &pScopes){
+
+
+        //TODO finish function
+        vector< shared_ptr<SyntaxTree::node> > open;
+        open.push_back(Tree->root);
+        shared_ptr<SyntaxTree::node> temp;
+        bool foundOuter = false;
+        bool foundInner = false; 
+        int Oscope;
+        int Iscope;
+
+        while(open.empty() == false)
+        {
+            temp = open.back();
+            open.pop_back();
+
+            if(foundOuter == false)
+            {
+                if(temp->name == "PROC_DEFS" && temp->tableNode->scope == 0)
+                {
+                    foundOuter = true;
+                    if(temp->children.size() == 1)
+                     Oscope = temp->children[0]->children[1]->children[0]->tableNode->scope;
+                else Oscope = temp->children[1]->children[1]->children[0]->tableNode->scope;
+                }
+            }
+            else{
+                    if(foundInner == false)
+                    {
+                        if(temp->name == "PROC_DEFS" && temp->tableNode->scope > 0)
+                        {
+                            Iscope = temp->tableNode->scope;
+                            foundInner = true;
+                            //add to pscopes at Oscope as placement
+                            if(temp->children.size() == 1)
+                            pScopes[Oscope].push_back(temp->children[0]->children[1]->children[0]->name);
+                            else pScopes[Oscope].push_back(temp->children[1]->children[1]->children[0]->name);
+
+                        }
+
+                    }
+                    else{
+                            if(temp->name == "PROC_DEFS" && temp->tableNode->scope > Iscope)
+                            {
+                                //USE THE SCOPE OF proc as placement, get the name
+                                int placement = temp->children[0]->children[2]->tableNode->scope;
+                                //-> add to pscopes at proc_scope , get the name
+                                if(temp->children.size() == 1)
+                            pScopes[placement].push_back(temp->children[0]->children[1]->children[0]->name);
+                            else pScopes[placement].push_back(temp->children[1]->children[1]->children[0]->name);
+
+                            }
+
+                            if(temp->name == "PROC_DEFS" && temp->tableNode->scope == Iscope)
+                            {
+                                 //add to pscopes at Oscope as placement
+                                  if(temp->children.size() == 1)
+                            pScopes[Oscope].push_back(temp->children[0]->children[1]->children[0]->name);
+                            else pScopes[Oscope].push_back(temp->children[1]->children[1]->children[0]->name);
+                            }
+
+                    }
+                    
+                    if(temp->name == "PROC_DEFS" && temp->tableNode->scope == 0)
+                    {
+                        if(temp->children.size() == 1)
+                     Oscope = temp->children[0]->children[1]->children[0]->tableNode->scope;
+                else Oscope = temp->children[1]->children[1]->children[0]->tableNode->scope;
+
+                foundInner= false;
+                       
+                    }
+                    
+
+            }
+
+
+
+            for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+
+        }
+
+        return;
+
+
+}
+void syntaxAnalysis::topLevel(  vector< vector<string> > &pScopes)
+{
+    vector< shared_ptr<SyntaxTree::node> > open;
+        open.push_back(Tree->root);
+        shared_ptr<SyntaxTree::node> temp;
+        
+
+        while(open.empty() == false)
+        {
+            temp = open.back();
+            open.pop_back();
+
+            if(temp->name == "PROC_DEFS" && temp->tableNode->scope == 0)
+            {
+                if(temp->children.size() == 1)
+                pScopes[pScopes.size()-1].push_back(temp->children[0]->children[1]->children[0]->name);
+                else pScopes[pScopes.size()-1].push_back(temp->children[1]->children[1]->children[0]->name);
+            }
+
+
+            for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+        }
+
+        return;
+
+}
 
 void syntaxAnalysis::errorCheck( vector< vector< pair<string,string>  > > declarations ){
     // we need to now check if we have more than one varible with the same name in the same scope

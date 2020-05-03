@@ -1,21 +1,57 @@
 num app;#
-app= 100;#
+app = 100;#
+beta;#
 num car;#
-car= 300;#
+string fg;#
+car = 300;#
+alpha;#
+output(app);#
+
+num pee;#
+pee = car;#
+app = 3;#
+fg = "dfsd";#
+app = car;#
+car = pee;#
+
 proc alpha {#
-    app= 110;#
-    num bat;#
-    bat= 210;#
-    proc kappa {#
-        num app;#
-        app= 111#
-        }#
-        proc epsilon {#
-            bat= 212;#
-            car= 312#
-            }#
-            }#
-            proc beta #
-            {app= 120;#
-            bat= 220#
-            }#
+	app = 110;#
+	num bat;#
+	bat = 210;#
+	epsilon;#
+	
+	proc kappa {#
+		num app;#
+		bool cat;#
+		cat = T;#
+		app = 111;#
+		proc cunt{#
+			app=1#
+		}#
+	}#
+	proc epsilon {#
+		bat = 212;#
+		car = 312#
+	}#
+    proc cats {#
+		bat = 212;#
+		car = 312#
+}#
+}#
+
+proc beta {#
+	app = 120;#
+     proc memer {#
+		bat = 212;#
+		car = 312#
+	}#
+	
+}#
+
+proc zeta {#
+    app = 110;#
+	proc laps {#
+		bat = 212;#
+		car = 312#
+}#
+}#
