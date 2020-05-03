@@ -22,7 +22,7 @@ void lexer::start(string Input){
     string keyLetters = "a,i,w,n,p,o,s,t,f,b,T,m,e,h,F";
     
     //open textfile
-    inputFile.open("input.txt");
+    inputFile.open(Input+".txt");
 
     //check if file is open
     if( inputFile.is_open() )
@@ -30,7 +30,7 @@ void lexer::start(string Input){
         //while loop that builds long string
         while( getline(inputFile,line) )
         {
-            result = result+line;
+            result = result+line+'#';
         }
     }
 
