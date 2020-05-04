@@ -127,12 +127,14 @@ void syntaxAnalysis::scopeNodes(){
         //then check scope 
         //if scope is fine rename variableID
                     //name //varID
-        vector< pair<string,string> > list;
+        vector< vector<pair<string,string>> > list;
+        list.resize(scopeNum+1);
         vector< shared_ptr<SyntaxTree::node> > open;
         open.push_back(Tree->root);
         shared_ptr<SyntaxTree::node> temp;
         bool gotcha = false;
         int counter=0;
+        int currProc_DEF = 0;
         
         num=0;
             //name varID
@@ -143,6 +145,8 @@ void syntaxAnalysis::scopeNodes(){
             temp = open.back();
             open.pop_back();
 
+            
+
             if(temp->name == "DECL")
                     {
                     if(temp->children[0]->name == "DECL")
@@ -152,7 +156,7 @@ void syntaxAnalysis::scopeNodes(){
                     PAIR.second = "V"+to_string(counter);
                     counter++;
                     //add pair to vector
-                    list.push_back(PAIR);
+                    list[temp->children[num]->children[0]->children[0]->tableNode->scope].push_back(PAIR);
 
                     num=0;
                     }
@@ -170,6 +174,11 @@ void syntaxAnalysis::scopeNodes(){
         {
             temp = open.back();
             open.pop_back();
+
+            if(temp->name == "PROC_DEFS")
+            {
+                currProc_DEF = temp->tableNode->scope;
+            }
 
             if(temp->name == "userDefined" && temp->children[0]->tableNode->varibleID == "")
             {
@@ -190,17 +199,59 @@ void syntaxAnalysis::scopeNodes(){
                 if(currScope<=declared)
                 {
                     //find var in list
-
-                    for(int i = 0; i<list.size() ; i++)
+                    bool found = false;
+                    for(int i = 0; i<list[currScope].size() ; i++)
                     {
-                        if(list[i].first == temp->children[0]->name)
+                        if(list[currScope][i].first == temp->children[0]->name)
                         {
-                            temp->children[0]->tableNode->varibleID = list[i].second;
+                            temp->children[0]->tableNode->varibleID = list[currScope][i].second;
+                            found = true;
                             break;
+                        }
+                    }
+                    //first try find it in list[currscope]
+                    //if not there look from end of list till start
+                    if(found == false)
+                    {
+                        bool good = false;
+                        if(currProc_DEF == 0)
+                        {
+                            for(int i = 0 ; i<list[list.size()-1].size() ; i++)
+                            {
+                                if(temp->children[0]->name == list[list.size()-1][i].first)
+                                {
+                                    good = true;
+                                    temp->children[0]->tableNode->varibleID = list[list.size()-1][i].second;
+                                    break;
+                                }
+                            }
+                            if(good == false)
+                            {
+                                temp->children[0]->tableNode->varibleID = "U";
+                            }
+                        }
+
+                        else{
+                        bool shap = false;
+                        for(int i = list.size()-1 ; i>-1 ; i--)
+                        {
+                            if(shap == true)
+                                break;
+                            for(int j = 0 ; j<list[i].size() ; j++)
+                            {
+                                if(list[i][j].first == temp->children[0]->name)
+                                {
+                                    temp->children[0]->tableNode->varibleID = list[i][j].second;
+                                    shap = true;
+                                    break;
+                                }
+                            }
                         }
                     }
 
 
+                    }
+                    
 
                 }
                 else{
@@ -550,7 +601,7 @@ void syntaxAnalysis::debugPrint(){
             cout<<"| ";
 
      
-         cout<<"└─"<<p.first->ID<<": "<<p.first->tableNode->varibleID<<" -> "<<p.first->tableNode->scope<<endl;
+         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<" -> "<<p.first->tableNode->scope<<endl;
 
         for(auto it = copy->children.begin(); it != copy->children.end(); it++)
         {
