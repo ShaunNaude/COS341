@@ -197,7 +197,6 @@ void syntaxAnalysis::debugPrint(){
             p.first = (*it);
             p.second = num+1;
             open.push_back(p);
-
         }
             
         

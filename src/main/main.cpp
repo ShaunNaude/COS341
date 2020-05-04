@@ -74,8 +74,6 @@ int main() {
     if(par->syntaxError == false)
     {
         shared_ptr<syntaxAnalysis> SA = make_shared<syntaxAnalysis>(tokenList,par->Tree);
-
-
     }
 
 
