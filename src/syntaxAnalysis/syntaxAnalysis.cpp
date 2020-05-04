@@ -43,6 +43,7 @@ void syntaxAnalysis::scopeNodes(){
 
     rename(scope);
 
+    //if no errors print to file
     debugPrint();
 
     
@@ -600,8 +601,10 @@ void syntaxAnalysis::debugPrint(){
         for(int i = 0 ; i<num ; i++ )
             cout<<"| ";
 
-     
-         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<" -> "<<p.first->tableNode->scope<<endl;
+         if(p.first->tableNode->varibleID != "")
+         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<endl;
+
+        else cout<<"└─"<<p.first->ID<<": "<<p.first->name<<endl;
 
         for(auto it = copy->children.begin(); it != copy->children.end(); it++)
         {
