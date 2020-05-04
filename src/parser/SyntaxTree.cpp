@@ -297,7 +297,7 @@ void SyntaxTree::writeToFile(){
 }
 
 void SyntaxTree::prune(){
-     //TODO: prune
+    
     //to prune duplicates
     //for each node look if one of its children has the same name, if yes copy the child name to parent and delete child.
         //special 
