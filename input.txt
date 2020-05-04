@@ -1,11 +1,12 @@
 num app;#
+num car;#
 app = 100;#
 beta;#
-num car;#
 string fg;#
 car = 300;#
 alpha;#
 output(app);#
+
 
 num pee;#
 pee = car;#

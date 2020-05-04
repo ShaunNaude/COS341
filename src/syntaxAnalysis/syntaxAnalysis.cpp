@@ -50,7 +50,7 @@ void syntaxAnalysis::scopeNodes(){
     
 }
 
- void syntaxAnalysis::rename(int scopeNum){
+ void syntaxAnalysis::rename(int scopeNum) {
                         //NAME,TYPE
      vector< vector< pair<string,string>  > > declarations;
      vector< pair<string,string> > tempList;
@@ -61,7 +61,7 @@ void syntaxAnalysis::scopeNodes(){
      for(int i = 0  ; i<scopeNum+1 ; i++)
      {
 
-         vector< shared_ptr<SyntaxTree::node> > open;
+        vector< shared_ptr<SyntaxTree::node> > open;
         open.push_back(Tree->root);
         shared_ptr<SyntaxTree::node> temp;
         stop = false;
@@ -120,6 +120,106 @@ void syntaxAnalysis::scopeNodes(){
         //
         renameProcedures(scopeNum);
 
+        //TODO rename varibles here.
+//=================================================================
+        //loop through tree, 
+        //if userdefined and variableID =""
+        //then check scope 
+        //if scope is fine rename variableID
+                    //name //varID
+        vector< pair<string,string> > list;
+        vector< shared_ptr<SyntaxTree::node> > open;
+        open.push_back(Tree->root);
+        shared_ptr<SyntaxTree::node> temp;
+        bool gotcha = false;
+        int counter=0;
+        
+        num=0;
+            //name varID
+        pair<string,string> PAIR;
+        //renaming variables
+        while(open.empty() == false)
+        {
+            temp = open.back();
+            open.pop_back();
+
+            if(temp->name == "DECL")
+                    {
+                    if(temp->children[0]->name == "DECL")
+                        num++;
+                    //name
+                    PAIR.first = temp->children[num]->children[0]->children[0]->name;
+                    PAIR.second = "V"+to_string(counter);
+                    counter++;
+                    //add pair to vector
+                    list.push_back(PAIR);
+
+                    num=0;
+                    }
+
+           
+            for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+
+            }
+
+        open.push_back(Tree->root);
+        counter=0;
+
+        while(open.empty() == false)
+        {
+            temp = open.back();
+            open.pop_back();
+
+            if(temp->name == "userDefined" && temp->children[0]->tableNode->varibleID == "")
+            {
+                int currScope =  temp->children[0]->tableNode->scope;
+                //get declared scope
+                int declared;
+                for(int i = 0 ; i<declarations.size() ; i++)
+                {
+                    for(int j = 0 ; j<declarations[i].size() ; j++)
+                    {
+                        if(declarations[i][j].first == temp->children[0]->name)
+                        {
+                            declared = i;
+                        }
+                    }
+                }
+
+                if(currScope<=declared)
+                {
+                    //find var in list
+
+                    for(int i = 0; i<list.size() ; i++)
+                    {
+                        if(list[i].first == temp->children[0]->name)
+                        {
+                            temp->children[0]->tableNode->varibleID = list[i].second;
+                            break;
+                        }
+                    }
+
+
+
+                }
+                else{
+                    temp->children[0]->tableNode->varibleID = "U";
+                }
+                
+                        
+                    }
+
+           
+            for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+
+            }
+            
+
+            
+        
+//=================================================================
         
  }
 
@@ -145,15 +245,138 @@ void syntaxAnalysis::renameProcedures(int scopeNum){
 
 
     }
-    //TODO: errorcheckP
+   
     //make a function to check if we have duplicate proceudures in same scope.
+    errorCheckP(pScopes);
+
+     if(error != false)
+        {
+            cout<<"Error: please make procedures within same scope unique"<<endl;
+            return;
+        }
 
 
 
-    //TODO: rename procedures
+        //renaming procedures here
+    //=============================================================
+        vector< shared_ptr<SyntaxTree::node> > open;
+        bool gotcha = false;
+        open.push_back(Tree->root);
+        shared_ptr<SyntaxTree::node> temp;
+                    //name //varID
+        vector< pair<string,string> > list;
+        int counter=0;
+        //renaming procedures
+        while(open.empty() == false)
+        {
+            temp = open.back();
+            open.pop_back();
+
+             if(temp->name == "PROC_DEFS")
+             {
+                if(temp->children.size() == 1)
+                {
+                temp->children[0]->children[1]->children[0]->tableNode->varibleID = "P"+to_string(counter);
+                pair<string,string> p ;
+                p.first = temp->children[0]->children[1]->children[0]->name;
+                p.second = temp->children[0]->children[1]->children[0]->tableNode->varibleID;
+                list.push_back(p);
+                }
+           else {
+               temp->children[1]->children[1]->children[0]->tableNode->varibleID = "P"+to_string(counter);
+               pair<string,string> p ;
+                p.first = temp->children[1]->children[1]->children[0]->name;
+                p.second = temp->children[1]->children[1]->children[0]->tableNode->varibleID;
+                list.push_back(p);
+
+           }
+
+                counter++;
+             }
+
+
+             for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+        
+        }
+
+    open.push_back(Tree->root);
+        //renaming procedure CALLS
+        while(open.empty() == false)
+        {
+            temp = open.back();
+            open.pop_back();
+
+             if(temp->name == "CALL")
+             {
+                 string name = temp->children[0]->children[0]->name;
+                 //check scope
+                 //pScopes[temp->children[0]->children[0]->tableNode->scope]
+
+                 for(int i = 0; i < pScopes[temp->children[0]->children[0]->tableNode->scope].size() ; i++ )
+                 {
+                     if(name == pScopes[temp->children[0]->children[0]->tableNode->scope][i])
+                     {
+                        
+                        for(int k = 0 ; k<list.size() ; k++)
+                        {
+
+                            if(name == list[k].first)
+                            {
+                                temp->children[0]->children[0]->tableNode->varibleID = list[k].second;
+
+                            }
+
+                        }
+                            gotcha = true;
+
+                     }
+                 }
+
+
+                if(gotcha == false)
+                {
+                    temp->children[0]->children[0]->tableNode->varibleID = "U";
+                }
+                gotcha = false;
+             }
+
+             for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+        
+        }
+
+//==============================================================
+
+
 
     
 
+}
+
+void syntaxAnalysis::errorCheckP(vector< vector<string> > pScopes)
+{
+    for(int i = 0 ; i < pScopes.size() ; i++)
+        {
+
+            unordered_set <string> stringSet ;
+
+            for(int k = 0 ; k<pScopes[i].size() ; k++)
+            {
+
+                if (stringSet.find(pScopes[i][k]) == stringSet.end()) 
+                    stringSet.insert(pScopes[i][k]); 
+                    else{
+                        cout<<"ERROR -> varible :'"<<pScopes[i][k]<<"' is defined twice in the same scope"<<endl;
+                        error = true;
+                    } 
+
+
+            } //end inner for 
+
+            stringSet.clear();
+
+}
 }
 
 void syntaxAnalysis::otherProcedures(vector< vector<string> > &pScopes){
@@ -327,7 +550,7 @@ void syntaxAnalysis::debugPrint(){
             cout<<"| ";
 
      
-         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<" -> "<<p.first->tableNode->scope<<endl;
+         cout<<"└─"<<p.first->ID<<": "<<p.first->tableNode->varibleID<<" -> "<<p.first->tableNode->scope<<endl;
 
         for(auto it = copy->children.begin(); it != copy->children.end(); it++)
         {

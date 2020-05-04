@@ -24,6 +24,7 @@ class syntaxAnalysis {
     void scopeNodes();
     void rename(int);
     void errorCheck(vector< vector< pair<string,string>  > >);
+    void errorCheckP(vector< vector<string> >);
     void renameProcedures(int);
 
 
