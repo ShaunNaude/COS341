@@ -95,22 +95,7 @@ void syntaxAnalysis::scopeNodes(){
 
                 }
 
-<<<<<<< HEAD
-               // if(temp->tableNode->scope > i)
-               // {
-                   //if(tempList.size() != 0)
-                    //declarations.push_back(tempList);
-
-                    //tempList.clear();
-                    //stop = true;
-                    //open.clear();
-                   // continue;
-               // }
-
-            
-=======
                
->>>>>>> ShaunDev
 
             for(auto it = temp->children.begin(); it != temp->children.end(); it++)
                 open.push_back((*it));

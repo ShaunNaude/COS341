@@ -6,7 +6,7 @@
 6:100 (tok_int)
 7:; (tok_semicolon)
 8:string (tok_string)
-9:app (var)
+9:fg (var)
 10:; (tok_semicolon)
 11:num (tok_num)
 12:car (var)
@@ -22,7 +22,6 @@
 22:= (tok_equal)
 23:110 (tok_int)
 24:; (tok_semicolon)
-<<<<<<< HEAD
 25:num (tok_num)
 26:bat (var)
 27:; (tok_semicolon)
@@ -35,20 +34,6 @@
 34:{ (tok_obrace)
 35:num (tok_num)
 36:app (var)
-=======
-25:bat (var)
-26:= (tok_equal)
-27:210 (tok_int)
-28:; (tok_semicolon)
-29:proc (tok_proc)
-30:kappa (var)
-31:{ (tok_obrace)
-32:num (tok_num)
-33:app (var)
-34:; (tok_semicolon)
-35:num (tok_num)
-36:pee (var)
->>>>>>> ShaunDev
 37:; (tok_semicolon)
 38:app (var)
 39:= (tok_equal)
@@ -76,12 +61,4 @@
 61:bat (var)
 62:= (tok_equal)
 63:220 (tok_int)
-<<<<<<< HEAD
 64:} (tok_cbrace)
-=======
-64:; (tok_semicolon)
-65:pee (var)
-66:= (tok_equal)
-67:10 (tok_int)
-68:} (tok_cbrace)
->>>>>>> ShaunDev
