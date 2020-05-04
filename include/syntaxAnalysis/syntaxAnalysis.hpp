@@ -12,13 +12,15 @@ class syntaxAnalysis {
     syntaxAnalysis(list<shared_ptr <token> > , shared_ptr<SyntaxTree>);
     ~syntaxAnalysis();
 
+    bool error = false;
+
     private:
     
 
     //private variables
     list<shared_ptr <token> > tokenList;
     shared_ptr<SyntaxTree> Tree;
-    bool error = false;
+    
 
     //private functions
     void scopeNodes();

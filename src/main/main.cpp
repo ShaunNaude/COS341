@@ -76,7 +76,15 @@ int main() {
         shared_ptr<syntaxAnalysis> SA = make_shared<syntaxAnalysis>(tokenList,par->Tree);
 
 
+        if(SA->error == false)
+        {
+            //add type-checking code here
+        }
+
+
     }
+
+    
 
 
 //=======================================================================================
