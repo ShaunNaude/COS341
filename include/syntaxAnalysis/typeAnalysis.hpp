@@ -7,13 +7,15 @@ class typeAnalysis {
     typeAnalysis();
     typeAnalysis(list<shared_ptr <token> > , shared_ptr<SyntaxTree>);
     ~typeAnalysis();
+    bool error = false;
 
     private:
     list<shared_ptr <token> > tokenList;
     shared_ptr<SyntaxTree> Tree;
-    bool error = false;
 
     void typeCheck();
+    bool ruleValidate();
+    bool hasValue();
 
     //debug function
     void errorPrint();
