@@ -20,12 +20,12 @@ public:
     ~SyntaxTree();
     int createTree(string); // this initailises root
     int addNode(int parent , string child , bool map); // note when we add nodes we need to find the parent first then add the child to the childrens list
-    //TODO make function that maps back
+
     string mapBack(string old);
-    //TODO make symbol table
+  
 
     void makeSymbolTable();
-    //TODO write tree to file.
+  
     void writeToFile();
 
     //prune tree
