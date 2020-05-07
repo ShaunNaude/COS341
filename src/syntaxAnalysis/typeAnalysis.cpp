@@ -97,29 +97,62 @@ void typeAnalysis::typeSet(){
             //NUMEXPR
             if(temp->name=="NUMEXPR"){
                 if(temp->children[temp->children.size()-1]->name=="VAR"){
-                
-                }else if(temp->children[temp->children.size()-1]->name=="integerLiteral"){
-                
+                    if(temp->children[temp->children.size()-1]->tableNode->type=="N"){
+                        changed=true;
+                        temp->tableNode->type="N";
+                    }
+                }else if(temp->children[temp->children.size()-1]->name=="integerLiteral"){//---------------------------------to be checked from
+                    if(temp->children[temp->children.size()-1]->tableNode->type!="N"||temp->tableNode->type!="N"){
+                        changed=true;
+                        temp->children[temp->children.size()-1]->tableNode->type="N"
+                        temp->tableNode->type="N"
+                    }
                 }else if(temp->children[temp->children.size()-1]->name=="CALC"){
-                
+                    if(temp->children[temp->children.size()-1]->tableNode->type=="N"){
+                        changed=true;
+                        temp->tableNode->type="N";
+                    }
                 }
             }
             //CALC
             if(temp->name=="CALC"){
                 if(temp->children[temp->children.size()-1]->name=="add"){
-                
+                    if(temp->children[temp->children.size()-2]->tableNode->type=="N"&&temp->children[temp->children.size()-3]->tableNode->type=="N"){
+                        if(temp->tableNode->type!="N"){
+                            changed=true;
+                            temp->tableNode->type="N";
+                        }
+                    }
                 }else if(temp->children[temp->children.size()-1]->name=="sub"){
-                
+                    if(temp->children[temp->children.size()-2]->tableNode->type=="N"&&temp->children[temp->children.size()-3]->tableNode->type=="N"){
+                        if(temp->tableNode->type!="N"){
+                            changed=true;
+                            temp->tableNode->type="N";
+                        }
+                    }
                 }else if(temp->children[temp->children.size()-1]->name=="mult"){
-                
+                    if(temp->children[temp->children.size()-2]->tableNode->type=="N"&&temp->children[temp->children.size()-3]->tableNode->type=="N"){
+                        if(temp->tableNode->type!="N"){
+                            changed=true;
+                            temp->tableNode->type="N";
+                        }
+                    }
                 }
             }
             //BOOL
             if(temp->name=="BOOL"){
                 if(temp->children[temp->children.size()-1]->name=="eq"){
-                
+                    if(temp->children[temp->children.size()-2]->type!=""){
+                        if(temp->children[temp->children.size()-2]->type==temp->children[temp->children.size()-3]->type){
+                            changed=true;
+                            temp->tableNode->type="B";
+                        }
+                    }
                 }else if(temp->children[temp->children.size()-1]->name=="not"){
-
+                    if(temp->children[temp->children.size()-2]->type=="B"){
+                        changed=true;
+                        temp->tableNode->type="B";
+                    }
                 }else if(temp->children[temp->children.size()-1]->name=="and"){
 
                 }else if(temp->children[temp->children.size()-1]->name=="or"){
@@ -138,7 +171,7 @@ void typeAnalysis::typeSet(){
                     if(temp->children[0]->name=="VAR"){
                 
                     }
-                }
+                }//----------------------------------------------------------------------------------------------------------to
             }
 
             for(int it = temp->children.size()-1; it > -1; it--)
