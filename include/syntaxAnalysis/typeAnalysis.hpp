@@ -16,6 +16,7 @@ class typeAnalysis {
     void typeCheck();
     bool ruleValidate();
     bool hasValue();
+    void typeSet();
 
     //debug function
     void errorPrint();
