@@ -84,6 +84,16 @@ void syntaxAnalysis::scopeNodes(){
 
                     //type
                     p.second = temp->children[num+1]->children[0]->name;
+                    
+                    if(p.second=="num"){
+                        p.second="N";
+                    }
+                    if(p.second=="string"){
+                        p.second="S";
+                    }
+                    if(p.second=="bool"){
+                        p.second="B";
+                    }
 
                     //set the actual varible type
                     temp->children[num]->children[0]->children[0]->tableNode->type = p.second;
@@ -602,9 +612,9 @@ void syntaxAnalysis::debugPrint(){
             cout<<"| ";
 
          if(p.first->tableNode->varibleID != "")
-         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<"             "<<p.first->tableNode->type<<endl;
+         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<endl;
 
-        else cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"             "<<p.first->tableNode->type<<endl;
+        else cout<<"└─"<<p.first->ID<<": "<<p.first->name<<endl;
 
         for(auto it = copy->children.begin(); it != copy->children.end(); it++)
         {
