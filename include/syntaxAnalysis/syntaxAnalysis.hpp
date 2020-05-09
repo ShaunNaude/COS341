@@ -28,6 +28,7 @@ class syntaxAnalysis {
     void errorCheck(vector< vector< pair<string,string>  > >);
     void errorCheckP(vector< vector<string> >);
     void renameProcedures(int);
+    void addType();
 
 
 
