@@ -104,8 +104,8 @@ void typeAnalysis::typeSet(){
                 }else if(temp->children[temp->children.size()-1]->name=="integerLiteral"){//---------------------------------to be checked from
                     if(temp->children[temp->children.size()-1]->tableNode->type!="N"||temp->tableNode->type!="N"){
                         changed=true;
-                        temp->children[temp->children.size()-1]->tableNode->type="N"
-                        temp->tableNode->type="N"
+                        temp->children[temp->children.size()-1]->tableNode->type="N";
+                        temp->tableNode->type="N";
                     }
                 }else if(temp->children[temp->children.size()-1]->name=="CALC"){
                     if(temp->children[temp->children.size()-1]->tableNode->type=="N"){
@@ -142,34 +142,69 @@ void typeAnalysis::typeSet(){
             //BOOL
             if(temp->name=="BOOL"){
                 if(temp->children[temp->children.size()-1]->name=="eq"){
-                    if(temp->children[temp->children.size()-2]->type!=""){
-                        if(temp->children[temp->children.size()-2]->type==temp->children[temp->children.size()-3]->type){
+                    if(temp->children[temp->children.size()-2]->tableNode->type!=""){
+                        if(temp->children[temp->children.size()-2]->tableNode->type==temp->children[temp->children.size()-3]->tableNode->type){
                             changed=true;
                             temp->tableNode->type="B";
                         }
                     }
                 }else if(temp->children[temp->children.size()-1]->name=="not"){
-                    if(temp->children[temp->children.size()-2]->type=="B"){
+                    if(temp->children[temp->children.size()-2]->tableNode->type=="B"){
+                        if(temp->tableNode->type!="B"){
+                            changed=true;
+                            temp->tableNode->type="B";
+                        }
+                    }
+                }else if(temp->children[temp->children.size()-1]->name=="and"){
+                    if(temp->children[temp->children.size()-2]->tableNode->type=="B"&&temp->children[temp->children.size()-3]->tableNode->type=="B"){
+                        if(temp->tableNode->type!="B"){
+                            changed=true;
+                            temp->tableNode->type="B";
+                        }
+                    }
+                }else if(temp->children[temp->children.size()-1]->name=="or"){
+                    if(temp->children[temp->children.size()-2]->tableNode->type=="B"&&temp->children[temp->children.size()-3]->tableNode->type=="B"){
+                        if(temp->tableNode->type!="B"){
+                            changed=true;
+                            temp->tableNode->type="B";
+                        }
+                    }
+                }else if(temp->children[temp->children.size()-1]->name=="T"){
+                    temp->children[temp->children.size()-1]->tableNode->type="B";
+                    if(temp->tableNode->type!="B"){
                         changed=true;
                         temp->tableNode->type="B";
                     }
-                }else if(temp->children[temp->children.size()-1]->name=="and"){
-
-                }else if(temp->children[temp->children.size()-1]->name=="or"){
-
-                }else if(temp->children[temp->children.size()-1]->name=="T"){
-
                 }else if(temp->children[temp->children.size()-1]->name=="F"){
-
+                    temp->children[temp->children.size()-1]->tableNode->type="B";
+                    if(temp->tableNode->type!="B"){
+                        changed=true;
+                        temp->tableNode->type="B";
+                    }
                 }else if(temp->children.size()==3){
                     if(temp->children[1]->name=="<"){
-
+                        if(temp->children[0]->tableNode->type=="N"&&temp->children[2]->tableNode->type=="N"){
+                            if(temp->tableNode->type!="B"){
+                                changed=true;
+                                temp->tableNode->type="B";
+                            }
+                        }
                     }else if(temp->children[1]->name==">"){
-
+                        if(temp->children[0]->tableNode->type=="N"&&temp->children[2]->tableNode->type=="N"){
+                            if(temp->tableNode->type!="B"){
+                                changed=true;
+                                temp->tableNode->type="B";
+                            }
+                        }
                     }
                 }else if(temp->children.size()==1){
                     if(temp->children[0]->name=="VAR"){
-                
+                        if(temp->tableNode->type!="B"){
+                            if(temp->children[0]->tableNode->type=="B"){
+                                changed=true;
+                                temp->tableNode->type="B";
+                            }
+                        }
                     }
                 }//----------------------------------------------------------------------------------------------------------to
             }
