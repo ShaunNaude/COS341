@@ -142,7 +142,7 @@ void syntaxAnalysis::addType(){
 
         }//end while loop
         
-    debugPrint();
+    //debugPrint();
 }
 
  void syntaxAnalysis::rename(int scopeNum) {

@@ -89,20 +89,23 @@ void typeAnalysis::typeSet(){
             }
             //TYPE
             if(temp->name=="TYPE"){
-                if(temp->children[temp->children.size()-1]->name=="N"){
+                if(temp->children[temp->children.size()-1]->name=="num"){
                     if(temp->tableNode->type!="N"){
                         changed=true;
                         temp->tableNode->type="N";
+                        temp->children[temp->children.size()-1]->tableNode->type="N";
                     }
-                }else if(temp->children[temp->children.size()-1]->name=="S"){
+                }else if(temp->children[temp->children.size()-1]->name=="string"){
                     if(temp->tableNode->type!="S"){
                         changed=true;
                         temp->tableNode->type="S";
+                        temp->children[temp->children.size()-1]->tableNode->type="S";
                     }
-                }else if(temp->children[temp->children.size()-1]->name=="B"){
+                }else if(temp->children[temp->children.size()-1]->name=="bool"){
                     if(temp->tableNode->type!="B"){
                         changed=true;
                         temp->tableNode->type="B";
+                        temp->children[temp->children.size()-1]->tableNode->type="S";
                     }
                 }
             }
@@ -122,7 +125,8 @@ void typeAnalysis::typeSet(){
                         temp->children[temp->children.size()-1]->tableNode->type=temp->tableNode->type;
                     }
                 }
-            }else if(temp->name=="VAR"){
+            }
+            if(temp->name=="VAR"){
                 if(temp->children[temp->children.size()-1]->name=="userDefined"){
                     if(temp->tableNode->type!=temp->children[temp->children.size()-1]->tableNode->type){
                         changed=true;
@@ -130,12 +134,15 @@ void typeAnalysis::typeSet(){
                     }
                 }
             }
+
             //NUMEXPR
             if(temp->name=="NUMEXPR"){
                 if(temp->children[temp->children.size()-1]->name=="VAR"){
                     if(temp->children[temp->children.size()-1]->tableNode->type=="N"){
-                        changed=true;
-                        temp->tableNode->type="N";
+                        if(temp->tableNode->type!="N"){
+                            changed=true;
+                            temp->tableNode->type="N";
+                        }
                     }
                 }else if(temp->children[temp->children.size()-1]->name=="integerLiteral"){//---------------------------------to be checked from
                     if(temp->children[temp->children.size()-1]->tableNode->type!="N"||temp->tableNode->type!="N"){
@@ -145,8 +152,10 @@ void typeAnalysis::typeSet(){
                     }
                 }else if(temp->children[temp->children.size()-1]->name=="CALC"){
                     if(temp->children[temp->children.size()-1]->tableNode->type=="N"){
-                        changed=true;
-                        temp->tableNode->type="N";
+                        if(temp->tableNode->type!="N"){
+                            changed=true;
+                            temp->tableNode->type="N";
+                        }
                     }
                 }
             }
@@ -180,8 +189,10 @@ void typeAnalysis::typeSet(){
                 if(temp->children[temp->children.size()-1]->name=="eq"){
                     if(temp->children[temp->children.size()-2]->tableNode->type!=""){
                         if(temp->children[temp->children.size()-2]->tableNode->type==temp->children[temp->children.size()-3]->tableNode->type){
-                            changed=true;
-                            temp->tableNode->type="B";
+                            if(temp->tableNode->type!="B"){
+                                changed=true;
+                                temp->tableNode->type="B";
+                            }
                         }
                     }
                 }else if(temp->children[temp->children.size()-1]->name=="not"){
@@ -217,20 +228,11 @@ void typeAnalysis::typeSet(){
                         changed=true;
                         temp->tableNode->type="B";
                     }
-                }else if(temp->children.size()==3){
-                    if(temp->children[1]->name=="<"){
-                        if(temp->children[0]->tableNode->type=="N"&&temp->children[2]->tableNode->type=="N"){
-                            if(temp->tableNode->type!="B"){
-                                changed=true;
-                                temp->tableNode->type="B";
-                            }
-                        }
-                    }else if(temp->children[1]->name==">"){
-                        if(temp->children[0]->tableNode->type=="N"&&temp->children[2]->tableNode->type=="N"){
-                            if(temp->tableNode->type!="B"){
-                                changed=true;
-                                temp->tableNode->type="B";
-                            }
+                }else if(temp->children.size()==2){//----------------------------------------------------------------------------------------
+                    if(temp->children[0]->tableNode->type=="N"&&temp->children[1]->tableNode->type=="N"){
+                        if(temp->tableNode->type!="B"){
+                            changed=true;
+                            temp->tableNode->type="B";
                         }
                     }
                 }else if(temp->children.size()==1){
@@ -351,6 +353,13 @@ bool typeAnalysis::hasValue(){
     while(!open.empty()){
         temp=open.back();
         open.pop_back();
+
+        if(temp->name=="VAR"){
+            if(temp->children[0]->name=="userDefined"){
+                temp->children[0]->tableNode->type=temp->children[0]->children[0]->tableNode->type;
+                temp->tableNode->type=temp->children[0]->tableNode->type;
+            }
+        }
 
         if(temp->name=="PROC"){//set current procedures name and display error if one is found
             for(int it = temp->children.size()-1; it > -1; it--){
