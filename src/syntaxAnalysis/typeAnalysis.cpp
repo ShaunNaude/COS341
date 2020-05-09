@@ -277,7 +277,7 @@ bool typeAnalysis::ruleValidate(){
         //IO/CALLS
         if(temp->name=="IO"){
             if(temp->children[0]->name=="VAR"){
-                if(temp->children[0]->tableNode->type!="N"||temp->children[0]->tableNode->type!="B"||temp->children[0]->tableNode->type!="S"){
+                if(temp->children[0]->tableNode->type!="N"&&temp->children[0]->tableNode->type!="B"&&temp->children[0]->tableNode->type!="S"){
                     cout<<temp->children[0]->children[0]->children[0]->name<<" is not of the correct type(num, string, bool)"<<endl;
                 }
             }
