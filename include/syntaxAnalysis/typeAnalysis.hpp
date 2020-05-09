@@ -19,5 +19,5 @@ class typeAnalysis {
     void typeSet();
 
     //debug function
-    void errorPrint();
+    void Print();
 };

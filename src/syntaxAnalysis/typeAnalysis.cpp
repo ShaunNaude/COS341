@@ -5,6 +5,7 @@ typeAnalysis::typeAnalysis(list<shared_ptr <token> > tokenList, shared_ptr<Synta
     this->tokenList = tokenList;
     this->Tree = Tree;
     typeCheck();
+    Print();
 }
 
 typeAnalysis::typeAnalysis() {
@@ -24,8 +25,43 @@ void typeAnalysis::typeCheck(){
     }
 }
 
-void typeAnalysis::errorPrint(){//function to display errors
+void typeAnalysis::Print(){//function to display errors
+    vector< pair< shared_ptr<SyntaxTree::node> , int > > open;
+    pair<shared_ptr<SyntaxTree::node> , int > p;
+    p.first = Tree->root;
+    p.second = 0;
+    int num;
+    open.push_back(p);
+    shared_ptr<SyntaxTree::node> temp;
 
+    while(open.empty() == false)
+    {
+        
+        p.first = open.back().first;
+        auto copy = p.first;
+        num = open.back().second;
+
+        open.pop_back();
+      
+        //display indents
+        for(int i = 0 ; i<num ; i++ )
+            cout<<"| ";
+
+         if(p.first->tableNode->varibleID != "")
+         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<"             "<<p.first->tableNode->type<<endl;
+
+        else cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"             "<<p.first->tableNode->type<<endl;
+
+        for(auto it = copy->children.begin(); it != copy->children.end(); it++)
+        {
+            p.first = (*it);
+            p.second = num+1;
+            open.push_back(p);
+        }
+            
+        
+
+    }
 }
 
 void typeAnalysis::typeSet(){
@@ -53,17 +89,17 @@ void typeAnalysis::typeSet(){
             }
             //TYPE
             if(temp->name=="TYPE"){
-                if(temp->children[temp->children.size()-1]->name=="num"){
+                if(temp->children[temp->children.size()-1]->name=="N"){
                     if(temp->tableNode->type!="N"){
                         changed=true;
                         temp->tableNode->type="N";
                     }
-                }else if(temp->children[temp->children.size()-1]->name=="string"){
+                }else if(temp->children[temp->children.size()-1]->name=="S"){
                     if(temp->tableNode->type!="S"){
                         changed=true;
                         temp->tableNode->type="S";
                     }
-                }else if(temp->children[temp->children.size()-1]->name=="bool"){
+                }else if(temp->children[temp->children.size()-1]->name=="B"){
                     if(temp->tableNode->type!="B"){
                         changed=true;
                         temp->tableNode->type="B";
@@ -222,42 +258,79 @@ bool typeAnalysis::ruleValidate(){
     open.push_back(Tree->root);
     shared_ptr<SyntaxTree::node> temp;
     string procName="";
+    int c=0;
 
     while(!open.empty()){
         temp=open.back();
         open.pop_back();
 
+        if(temp->name=="PROC"){//set current procedures name and display error if one is found
+            for(int it = temp->children.size()-1; it > -1; it--){
+                if(temp->children[it]->name=="userDefined"){
+                    procName=temp->children[it]->children[0]->name;
+                }
+            }
+        }
+
         //IO/CALLS
         if(temp->name=="IO"){
-            
+            if(temp->children[0]->name=="VAR"){
+                if(temp->children[0]->tableNode->type!="N"||temp->children[0]->tableNode->type!="B"||temp->children[0]->tableNode->type!="S"){
+                    cout<<temp->children[0]->children[0]->children[0]->name<<" is not of the correct type(num, string, bool)"<<endl;
+                }
+            }
         }else
         if(temp->name=="CALL"){
-            
+            if(temp->children[0]->name=="userDefined"){
+                if(temp->children[0]->tableNode->type!="P"){
+                    cout<<"In the procedure "<<procName<<" the procedure "<<temp->children[0]->children[0]->name<<" was not declared in this scope"<<endl;
+                }
+            }
         }else
         //ASSIGN
         if(temp->name=="ASSIGN"){
             if(temp->children[0]->name=="stringLiteral"){
-
+                if(temp->children[temp->children.size()-1]->tableNode->type!="S"){
+                    cout<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a string"<<endl;
+                }
             }else if(temp->children[0]->name=="VAR"){
-
+                if(temp->children[temp->children.size()-1]->tableNode->type!=temp->children[0]->tableNode->type){
+                    cout<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not of the same type as "<<temp->children[0]->children[0]->children[0]->name<<endl;
+                }
             }else if(temp->children[0]->name=="NUMEXPR"){
-
+                if(temp->children[temp->children.size()-1]->tableNode->type!="N"){
+                    cout<<"In procedure "<<procName<<" "<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a number"<<endl;
+                }
             }else if(temp->children[0]->name=="BOOL"){
-
+                if(temp->children[temp->children.size()-1]->tableNode->type!="B"){
+                    cout<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a bool"<<endl;
+                }
             }
         }else
         //COND BRANCH
         if(temp->name=="COND_BRANCH"){
             if(temp->children[temp->children.size()-1]->name=="if"){
-                
+                if(temp->children[temp->children.size()-2]->tableNode->type!="B"){
+                    cout<<"In procedure "<<procName<<" there is a problem with the boolean expression in an if statement"<<endl;
+                }
             }
         }else
         //COND LOOP
         if(temp->name=="COND_LOOP"){
             if(temp->children[temp->children.size()-1]->name=="while"){
-
+                if(temp->children[temp->children.size()-2]->tableNode->type!="B"){
+                    cout<<"In procedure "<<procName<<" there is a problem with the boolean expression in a while loop"<<endl;
+                }
             }else if(temp->children[temp->children.size()-1]->name=="for"){
-
+                for(int it = 0; it < temp->children.size(); it++){
+                    c++;
+                    if(temp->children[it]->name=="VAR"){
+                        if(temp->children[it]->tableNode->type!="N"){
+                            cout<<"In procedure "<<procName<<" there is a problem with VAR nember "<<c<<" not being a number"<<endl;
+                        }
+                    }
+                }
+                c=0;
             }
         }
 

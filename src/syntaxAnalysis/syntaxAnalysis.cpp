@@ -580,7 +580,7 @@ void syntaxAnalysis::errorCheck( vector< vector< pair<string,string>  > > declar
 }
 
 void syntaxAnalysis::debugPrint(){
-     vector< pair< shared_ptr<SyntaxTree::node> , int > > open;
+    vector< pair< shared_ptr<SyntaxTree::node> , int > > open;
     pair<shared_ptr<SyntaxTree::node> , int > p;
     p.first = Tree->root;
     p.second = 0;
@@ -602,9 +602,9 @@ void syntaxAnalysis::debugPrint(){
             cout<<"| ";
 
          if(p.first->tableNode->varibleID != "")
-         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<endl;
+         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<"             "<<p.first->tableNode->type<<endl;
 
-        else cout<<"└─"<<p.first->ID<<": "<<p.first->name<<endl;
+        else cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"             "<<p.first->tableNode->type<<endl;
 
         for(auto it = copy->children.begin(); it != copy->children.end(); it++)
         {
