@@ -141,6 +141,26 @@ void syntaxAnalysis::addType(){
                 open.push_back((*it));
 
         }//end while loop
+
+         open.push_back(Tree->root);
+
+        while(open.empty() == false )
+        {
+            temp = open.back();
+            open.pop_back();
+
+              
+                    if(temp->tableNode->varibleID[0] == 'P' )
+                    {                    
+                        temp->tableNode->type = "P";
+                    }
+
+               
+
+            for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+
+        }//end while loop
         
     //debugPrint();
 }
