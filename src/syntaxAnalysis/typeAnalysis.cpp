@@ -48,7 +48,7 @@ void typeAnalysis::Print(){//function to display errors
             cout<<"| ";
 
          if(p.first->tableNode->varibleID != "")
-         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<"             "<<p.first->tableNode->type<<endl;
+         cout<<"└─"<<p.first->ID<<": "<<p.first->tableNode->varibleID<<"             "<<p.first->tableNode->type<<endl;
 
         else cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"             "<<p.first->tableNode->type<<endl;
 
@@ -261,6 +261,7 @@ bool typeAnalysis::ruleValidate(){
     shared_ptr<SyntaxTree::node> temp;
     string procName="";
     int c=0;
+    int line = 0, col = 0;
 
     while(!open.empty()){
         temp=open.back();
@@ -278,14 +279,14 @@ bool typeAnalysis::ruleValidate(){
         if(temp->name=="IO"){
             if(temp->children[0]->name=="VAR"){
                 if(temp->children[0]->tableNode->type!="N"&&temp->children[0]->tableNode->type!="B"&&temp->children[0]->tableNode->type!="S"){
-                    cout<<temp->children[0]->children[0]->children[0]->name<<" is not of the correct type(num, string, bool)"<<endl;
+                    cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In the procedure "<<procName<<" "<<temp->children[0]->children[0]->children[0]->name<<" is not of the correct type(num, string, bool)"<<endl;
                 }
             }
         }else
         if(temp->name=="CALL"){
             if(temp->children[0]->name=="userDefined"){
                 if(temp->children[0]->tableNode->type!="P"){
-                    cout<<"In the procedure "<<procName<<" the procedure "<<temp->children[0]->children[0]->name<<" was not declared in this scope"<<endl;
+                    cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In the procedure "<<procName<<" the procedure "<<temp->children[0]->children[0]->name<<" was not declared in this scope"<<endl;
                 }
             }
         }else
@@ -293,19 +294,19 @@ bool typeAnalysis::ruleValidate(){
         if(temp->name=="ASSIGN"){
             if(temp->children[0]->name=="stringLiteral"){
                 if(temp->children[temp->children.size()-1]->tableNode->type!="S"){
-                    cout<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a string"<<endl;
+                    cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a string"<<endl;
                 }
             }else if(temp->children[0]->name=="VAR"){
                 if(temp->children[temp->children.size()-1]->tableNode->type!=temp->children[0]->tableNode->type){
-                    cout<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not of the same type as "<<temp->children[0]->children[0]->children[0]->name<<endl;
+                    cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not of the same type as "<<temp->children[0]->children[0]->children[0]->name<<endl;
                 }
             }else if(temp->children[0]->name=="NUMEXPR"){
                 if(temp->children[temp->children.size()-1]->tableNode->type!="N"){
-                    cout<<"In procedure "<<procName<<" "<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a number"<<endl;
+                    cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In procedure "<<procName<<" "<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a number"<<endl;
                 }
             }else if(temp->children[0]->name=="BOOL"){
                 if(temp->children[temp->children.size()-1]->tableNode->type!="B"){
-                    cout<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a bool"<<endl;
+                    cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In procedure "<<procName<<temp->children[temp->children.size()-1]->children[0]->children[0]->name<<" is not a bool"<<endl;
                 }
             }
         }else
@@ -313,7 +314,7 @@ bool typeAnalysis::ruleValidate(){
         if(temp->name=="COND_BRANCH"){
             if(temp->children[temp->children.size()-1]->name=="if"){
                 if(temp->children[temp->children.size()-2]->tableNode->type!="B"){
-                    cout<<"In procedure "<<procName<<" there is a problem with the boolean expression in an if statement"<<endl;
+                    cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In procedure "<<procName<<" there is a problem with the boolean expression in an if statement"<<endl;
                 }
             }
         }else
@@ -321,14 +322,14 @@ bool typeAnalysis::ruleValidate(){
         if(temp->name=="COND_LOOP"){
             if(temp->children[temp->children.size()-1]->name=="while"){
                 if(temp->children[temp->children.size()-2]->tableNode->type!="B"){
-                    cout<<"In procedure "<<procName<<" there is a problem with the boolean expression in a while loop"<<endl;
+                    cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In procedure "<<procName<<" there is a problem with the boolean expression in a while loop"<<endl;
                 }
             }else if(temp->children[temp->children.size()-1]->name=="for"){
                 for(int it = 0; it < temp->children.size(); it++){
                     c++;
                     if(temp->children[it]->name=="VAR"){
                         if(temp->children[it]->tableNode->type!="N"){
-                            cout<<"In procedure "<<procName<<" there is a problem with VAR nember "<<c<<" not being a number"<<endl;
+                            cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In procedure "<<procName<<" there is a problem with VAR nember "<<c<<" not being a number"<<endl;
                         }
                     }
                 }
@@ -349,6 +350,7 @@ bool typeAnalysis::hasValue(){
     open.push_back(Tree->root);
     shared_ptr<SyntaxTree::node> temp;
     string procName="";
+    int line = 0, col = 0;
 
     while(!open.empty()){
         temp=open.back();
@@ -376,7 +378,7 @@ bool typeAnalysis::hasValue(){
                 if(temp->children[it]->name=="userDefined"){
                     procName=temp->children[it]->children[0]->name;
                     if(temp->children[it]->children[0]->tableNode->varibleID=="U"){
-                        cout<<"The procedure "+procName+" is undefined"<<endl;
+                        cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"The procedure "+procName+" is undefined"<<endl;
                         ret = true;
                     }
                 }
@@ -387,7 +389,7 @@ bool typeAnalysis::hasValue(){
             for(int it = temp->children.size()-1; it > -1; it--){
                 if(temp->children[it]->name=="userDefined"){
                     if(temp->children[it]->children[0]->tableNode->varibleID=="U"){
-                        cout<<"In the procedure "+procName+" the variable "+temp->children[it]->children[0]->name+" is undefined"<<endl;
+                        cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In the procedure "+procName+" the variable "+temp->children[it]->children[0]->name+" is undefined"<<endl;
                         ret = true;
                     }
                 }
@@ -398,7 +400,7 @@ bool typeAnalysis::hasValue(){
             for(int it = temp->children.size()-1; it > -1; it--){
                 if(temp->children[it]->name=="userDefined"){
                     if(temp->children[it]->children[0]->tableNode->varibleID=="U"){
-                        cout<<"In the procedure "+procName+" the variable "+temp->children[it]->children[0]->name+" is undefined"<<endl;
+                        cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In the procedure "+procName+" the variable "+temp->children[it]->children[0]->name+" is undefined"<<endl;
                         ret = true;
                     }
                 }
@@ -409,7 +411,7 @@ bool typeAnalysis::hasValue(){
             for(int it = temp->children.size()-1; it > -1; it--){
                 if(temp->children[it]->name=="userDefined"){
                     if(temp->children[it]->children[0]->tableNode->varibleID=="U"){
-                        cout<<"In the procedure "+procName+" the call to "+temp->children[it]->children[0]->name+" is undefined"<<endl;
+                        cout<<"TYPE ERROR [line: "<<line<<", col: "<<col<<"]: "<<"In the procedure "+procName+" the call to "+temp->children[it]->children[0]->name+" is undefined"<<endl;
                         ret = true;
                     }
                 }
