@@ -356,8 +356,18 @@ bool typeAnalysis::hasValue(){
 
         if(temp->name=="VAR"){
             if(temp->children[0]->name=="userDefined"){
-                temp->children[0]->tableNode->type=temp->children[0]->children[0]->tableNode->type;
-                temp->tableNode->type=temp->children[0]->tableNode->type;
+                if(temp->children[0]->children[0]->tableNode->varibleID!="U"){
+                    temp->children[0]->tableNode->type=temp->children[0]->children[0]->tableNode->type;
+                    temp->tableNode->type=temp->children[0]->tableNode->type;
+                }
+            }
+        }
+        if(temp->name=="CALL"){
+            if(temp->children[0]->name=="userDefined"){
+                if(temp->children[0]->children[0]->tableNode->varibleID!="U"){
+                    temp->children[0]->tableNode->type=temp->children[0]->children[0]->tableNode->type;
+                    temp->tableNode->type=temp->children[0]->tableNode->type;
+                }
             }
         }
 

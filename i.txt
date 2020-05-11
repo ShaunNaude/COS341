@@ -5,9 +5,17 @@ num rax;
 num rbx;
 num rcx;
 
+string a;
+bool b;
+bool c;
+
 rax = 0;
 rbx = 0;
 rcx = 0;
+
+a = "acd";
+b = T;
+c = T;
 
 while (T) {
   input(rbx);
@@ -25,6 +33,10 @@ proc mod {
       rax = rbx;
       rbx = sub(rbx, rcx)
     };
+    rbx = add(rbx, rcx);
+    rbx = mult(rbx, rcx);
+    c = and(b,c);
+    c = or(b,c);
     if (eq(rbx, zero)) then {
       rax = 0
     }
