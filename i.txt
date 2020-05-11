@@ -1,22 +1,13 @@
-num app;
-app= 100;
-string fg;
-num car;
-car= 300;
-proc alpha {
-    app= 110;
-    num bat;
-    bat= 210;
-    proc kappa {
-        num app;
-        app= 111
-        }
-        proc epsilon {
-            bat= 212;
-            car= 312
-            }
-            }
-            proc beta 
-            {app= 120;
-            bat= 220
-            }
+if ((gg > tt)) then {
+  halt;
+  bool hh;
+  ll = 88;
+  qq;
+  qq;
+  num jj
+} else {
+  oo = sub(add(7446730, 93340), aa);
+  vv = 60
+};
+mm = 49
+

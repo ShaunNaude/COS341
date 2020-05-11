@@ -588,6 +588,7 @@ void parser::Parse()
     int currentParentID;
     Tree = make_shared<SyntaxTree>();
     auto it = tokenList.begin();
+    
 
     //fuck i need to make the stack store pairs, string,int the int will be its parents ID
    
@@ -624,7 +625,10 @@ void parser::Parse()
             if( top == (*it)->token_type || ( top == "0" && (*it)->token_type == "g") || ( top == "1" && (*it)->token_type == "g") )
                 {
                     //terminal match
+                    
                     Tree->addNode(currentParentID,(*it)->token_str,false);
+                    //TODO: remove
+                    //cout<<(*it)->token_str<<endl;
                     it++;
                     continue;
                 }
@@ -697,7 +701,7 @@ void parser::Parse()
         vector<string> rules;
         string temp;
         auto copy = it;
-
+        auto copy2 =it;
             int n = count(ruleList.begin(), ruleList.end(), '%');
 
             if(n>=2)
@@ -713,6 +717,15 @@ void parser::Parse()
                 
                 if(rules[0] == "H")
                 {
+                    if(++copy2 == tokenList.end() )
+                    {
+                        p.second = Tree->addNode(currentParentID,rules[0],true);
+                        p.first = rules[0];
+                        stack.push_back(p);
+                        temp="";
+                        continue;
+                    }
+
                     if( (*++copy)->token_type == "=" )
                     {
                         //rule 2
@@ -1236,9 +1249,10 @@ void parser::DECLRule(auto it,int row,int col ,int currentParentID){
     string check = (*it)->token_type;
     if((*it)->token_type == "v" || (*it)->token_type == "w" || (*it)->token_type == "x" )
     {
-        for(int k = rule2.length() -1 ; k>-1 ; --k)
+        for(int k = rule1.length() -1 ; k>-1 ; --k)
         {
-            temp.push_back(rule2[k]);
+            //TODO: fuck i wanna die
+            temp.push_back(rule1[k]);
             p.second = Tree->addNode(currentParentID,temp,true);
             p.first = temp;
             stack.push_back(p);
