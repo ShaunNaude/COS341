@@ -1,13 +1,53 @@
-if ((gg > tt)) then {
-  halt;
-  bool hh;
-  ll = 88;
-  qq;
-  qq;
-  num jj
-} else {
-  oo = sub(add(7446730, 93340), aa);
-  vv = 60
-};
-mm = 49
+num zero;
+zero = 0;
 
+num rax;
+num rbx;
+num rcx;
+
+string a;
+bool b;
+bool c;
+
+rax = 0;
+rbx = 0;
+rcx = 0;
+
+a = "acd";
+b = T;
+c = T;
+
+while (T) {
+  input(rbx);
+  input(rcx);
+  gcd;
+  output(rax)
+};
+
+proc mod {
+  if (eq(rbx, rcx)) then {
+    rax = 0
+  } else {
+    rax = rbx;
+    while ((rbx > zero)) {
+      rax = rbx;
+      rbx = sub(rbx, rcx)
+    };
+    rbx = add(rbx, rcx);
+    rbx = mult(rbx, rcx);
+    c = and(b,c);
+    c = or(b,c);
+    if (eq(rbx, zero)) then {
+      rax = 0
+    }
+  }
+}
+
+proc gcd {
+  while (not eq(rcx, zero)) {
+    mod;
+    rbx = rcx;
+    rcx = rax
+  };
+  rax = rbx
+}

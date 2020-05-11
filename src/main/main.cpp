@@ -2,7 +2,7 @@
 #include <lexer/lexer.hpp>
 #include <parser/parser.hpp>
 #include <syntaxAnalysis/syntaxAnalysis.hpp>
-
+#include <syntaxAnalysis/typeAnalysis.hpp>
 
 using namespace std;
 
@@ -76,7 +76,19 @@ int main() {
         shared_ptr<syntaxAnalysis> SA = make_shared<syntaxAnalysis>(tokenList,par->Tree);
 
 
+        if(SA->error == false)
+        {
+            shared_ptr<typeAnalysis> TA = make_shared<typeAnalysis>(tokenList,par->Tree);
+            if(TA->error == false)
+            {
+                //code for 04
+            }
+        }
+
+
     }
+
+    
 
 
 //=======================================================================================

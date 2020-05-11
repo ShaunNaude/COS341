@@ -5,6 +5,10 @@ syntaxAnalysis::syntaxAnalysis(list<shared_ptr <token> > tokenList, shared_ptr<S
     this->tokenList = tokenList;
     this->Tree = Tree;
     scopeNodes();
+    if(error == false)
+    {
+        addType();
+    }
 }
 
 syntaxAnalysis::syntaxAnalysis() {
@@ -43,11 +47,102 @@ void syntaxAnalysis::scopeNodes(){
 
     rename(scope);
 
-    debugPrint();
+    //if no errors print to file
+    //debugPrint();
 
     
 
     
+}
+void syntaxAnalysis::addType(){
+
+        vector< shared_ptr<SyntaxTree::node> > open;
+        open.push_back(Tree->root);
+        shared_ptr<SyntaxTree::node> temp;
+            //varID,type
+        pair<string,string> p;
+        vector< pair<string,string> > list; 
+        int num = 0;
+
+        while(open.empty() == false )
+        {
+            temp = open.back();
+            open.pop_back();
+
+              
+                    if(temp->name == "DECL")
+                    {
+                    if(temp->children[0]->name == "DECL")
+                        num++;
+                    //VARID
+                    p.first = temp->children[num]->children[0]->children[0]->tableNode->varibleID;
+                    
+
+                    //type
+                    p.second = temp->children[num+1]->children[0]->name;
+                    
+                    if(p.second=="num"){
+                        p.second="N";
+                    }
+                    if(p.second=="string"){
+                        p.second="S";
+                    }
+                    if(p.second=="bool"){
+                        p.second="B";
+                    }
+
+                    //set the actual varible type
+                    temp->children[num]->children[0]->children[0]->tableNode->type = p.second;
+
+                    //add pair to vector
+                    list.push_back(p);
+
+                    num=0;
+                    }
+
+
+               
+
+            for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+
+        }//end while loop
+
+        //okay fuck now i need to traverse the tree and find all nodes 
+        //thats that have a varible ID "Vx" then i need to assign the appropriate type from the list vector.
+
+        open.push_back(Tree->root);
+
+        while(open.empty() == false )
+        {
+            temp = open.back();
+            open.pop_back();
+
+              
+                    if(temp->tableNode->varibleID[0] == 'V' )
+                    {
+                        string type = "";
+                        //find the VARID in the list
+                        for(int i=0 ; i<list.size() ; i++)
+                        {
+                            if(temp->tableNode->varibleID == list[i].first)
+                            {
+                                type = list[i].second;
+                            }
+                        }
+                        //give temp the type associated with the varID 
+
+                        temp->tableNode->type = type;
+                    }
+
+               
+
+            for(auto it = temp->children.begin(); it != temp->children.end(); it++)
+                open.push_back((*it));
+
+        }//end while loop
+        
+    //debugPrint();
 }
 
  void syntaxAnalysis::rename(int scopeNum) {
@@ -83,6 +178,16 @@ void syntaxAnalysis::scopeNodes(){
 
                     //type
                     p.second = temp->children[num+1]->children[0]->name;
+                    
+                    if(p.second=="num"){
+                        p.second="N";
+                    }
+                    if(p.second=="string"){
+                        p.second="S";
+                    }
+                    if(p.second=="bool"){
+                        p.second="B";
+                    }
 
                     //set the actual varible type
                     temp->children[num]->children[0]->children[0]->tableNode->type = p.second;
@@ -579,7 +684,7 @@ void syntaxAnalysis::errorCheck( vector< vector< pair<string,string>  > > declar
 }
 
 void syntaxAnalysis::debugPrint(){
-     vector< pair< shared_ptr<SyntaxTree::node> , int > > open;
+    vector< pair< shared_ptr<SyntaxTree::node> , int > > open;
     pair<shared_ptr<SyntaxTree::node> , int > p;
     p.first = Tree->root;
     p.second = 0;
@@ -600,15 +705,16 @@ void syntaxAnalysis::debugPrint(){
         for(int i = 0 ; i<num ; i++ )
             cout<<"| ";
 
-     
-         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<" -> "<<p.first->tableNode->scope<<endl;
+         if(p.first->tableNode->varibleID != "")
+         cout<<"└─"<<p.first->ID<<": "<<p.first->name<<"|"<<p.first->tableNode->varibleID<<endl;
+
+        else cout<<"└─"<<p.first->ID<<": "<<p.first->name<<endl;
 
         for(auto it = copy->children.begin(); it != copy->children.end(); it++)
         {
             p.first = (*it);
             p.second = num+1;
             open.push_back(p);
-
         }
             
         
